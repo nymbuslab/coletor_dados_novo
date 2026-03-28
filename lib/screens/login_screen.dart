@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -40,8 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Consumer<ConfigProvider>(
           builder: (context, configProvider, child) {
@@ -49,7 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24.0),
                 child: Card(
-                  elevation: 8,
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
                     child: Column(
@@ -58,22 +59,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Icon(
                           Icons.inventory_2,
                           size: 64,
-                          color: Colors.blue,
+                          color: AppColors.seed,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'Coletor de Dados',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
-                          ),
+                          style: tt.headlineMedium!.copyWith(color: AppColors.seed),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Licença: ${configProvider.config.licenca}',
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: tt.bodyMedium!.copyWith(
                             color: Colors.grey[600],
                             letterSpacing: 1,
                           ),
@@ -95,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Expanded(
                                   child: Text(
                                     'Configure o aplicativo antes de acessar',
-                                    style: TextStyle(
+                                    style: tt.bodyMedium!.copyWith(
                                       color: Colors.orange[700],
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -107,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (!configProvider.config.isConfigured)
                           const SizedBox(height: 24),
 
-                        // BotÃ£o Acessar
+                        // Botão Acessar
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -117,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? _acessar
                                 : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: AppColors.seed,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               disabledBackgroundColor: Colors.grey[300],
@@ -134,28 +130,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   )
-                                : const Text(
-                                    'Acessar',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
+                                : const Text('Acessar'),
                           ),
                         ),
                         const SizedBox(height: 16),
 
-                        // BotÃ£o ConfiguraÃ§Ãµes
+                        // Botão Configurações
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
                             onPressed: _goToConfig,
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.blue,
-                              side: const BorderSide(color: Colors.blue),
+                              foregroundColor: AppColors.seed,
+                              side: const BorderSide(color: AppColors.seed),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
-                            child: const Text(
-                              'Configurações',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            child: const Text('Configurações'),
                           ),
                         ),
                       ],

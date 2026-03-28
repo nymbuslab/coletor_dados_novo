@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-
 import 'package:http/http.dart' as http;
 import 'package:nymbus_coletor/models/etiqueta_coletor.dart';
 import 'package:nymbus_coletor/models/inventario_item.dart';
@@ -18,7 +17,7 @@ class ApiService {
   String? _baseUrl;
   bool get isConfigured => _baseUrl != null;
 
-  // Cliente HTTP injetÃ¡vel para facilitar testes
+  // Cliente HTTP injetável para facilitar testes
   http.Client _client = http.Client();
   void setClient(http.Client client) {
     _client = client;
@@ -33,10 +32,27 @@ class ApiService {
   static const int _maxRetries = 3;
   static const Duration _baseBackoff = Duration(milliseconds: 600);
 
-  // Handler global para nÃ£o autorizado (401/403)
+  // Handler global para não autorizado (401/403)
   void Function()? _onUnauthorized;
   void setUnauthorizedHandler(void Function() handler) {
     _onUnauthorized = handler;
+  }
+
+  // Cache de produtos em memória com TTL
+  final Map<String, List<dynamic>> _produtosCache = {};
+  final Map<String, DateTime> _cacheTimestamp = {};
+  static const Duration _cacheTtl = Duration(minutes: 10);
+
+  bool _cacheValido(String key) {
+    final ts = _cacheTimestamp[key];
+    if (ts == null) return false;
+    return DateTime.now().difference(ts) < _cacheTtl;
+  }
+
+  void invalidarCache() {
+    _produtosCache.clear();
+    _cacheTimestamp.clear();
+    LoggerService.d('Cache de produtos invalidado');
   }
 
   Map<String, String> get _jsonHeaders => const {
@@ -72,6 +88,7 @@ class ApiService {
     final ms = _baseBackoff.inMilliseconds * (1 << (attempt - 1));
     return Duration(milliseconds: ms);
   }
+
 
   Future<http.Response> _get(
     Uri url, {
@@ -218,101 +235,109 @@ class ApiService {
     }
   }
 
-  /// Busca dados do produto por cÃ³digo de barras
-  Future<Map<String, dynamic>?> buscarProduto(String codigoBarras) async {
-    if (!isConfigured) {
-      throw Exception('API nÃ£o configurada');
+  /// Busca um produto pelo cod_barras dentro de uma lista JSON já decodificada
+  Map<String, dynamic>? _buscarNaLista(List<dynamic> data, String codigoBarras) {
+    int itemsProcessados = 0;
+    for (var item in data) {
+      itemsProcessados++;
+      if (item == null || item is! Map<String, dynamic>) continue;
+      try {
+        final codBarras = item['cod_barras'];
+        if (codBarras == null) continue;
+        if (BarcodeUtils.sanitize(codBarras.toString()) ==
+            BarcodeUtils.sanitize(codigoBarras)) {
+          LoggerService.d('PRODUTO ENCONTRADO no item $itemsProcessados!');
+          return item;
+        }
+      } catch (_) {
+        continue;
+      }
+      if (itemsProcessados % 1000 == 0) {
+        LoggerService.d('Processados $itemsProcessados itens...');
+      }
     }
+    LoggerService.d('Busca concluída. Items processados: $itemsProcessados');
+    return null;
+  }
+
+  /// Busca dados do produto por código de barras
+  Future<Map<String, dynamic>?> buscarProduto(String codigoBarras) async {
+    if (!isConfigured) throw Exception('API não configurada');
     try {
+      const cacheKey = 'produtos';
       final codigoSan = BarcodeUtils.sanitize(codigoBarras);
       LoggerService.d('Código de barras procurado: "${LoggerService.maskBarcode(codigoSan)}"');
+
+      if (_cacheValido(cacheKey)) {
+        LoggerService.d('Cache hit /produtos (${_produtosCache[cacheKey]!.length} itens)');
+        return _buscarNaLista(_produtosCache[cacheKey]!, codigoBarras);
+      }
+
       final url = Uri.parse('$_baseUrl/produtos');
       LoggerService.d('Buscando todos os produtos com: ${LoggerService.redactUrl(url.toString())}');
       final response = await _get(url, timeout: _timeoutLong);
       LoggerService.d('Busca geral - Status: ${response.statusCode}');
       if (response.statusCode == 200) {
-        LoggerService.d(
-          'Tamanho da resposta: ${response.body.length} caracteres',
-        );
+        LoggerService.d('Tamanho da resposta: ${response.body.length} caracteres');
         try {
-          LoggerService.d('Iniciando decodificaÃ§Ã£o JSON...');
           final data = jsonDecode(response.body);
-          LoggerService.d(
-            'JSON decodificado com sucesso. Tipo: ${data.runtimeType}',
-          );
           if (data is List) {
             LoggerService.d('Total de produtos recebidos: ${data.length}');
-            Map<String, dynamic>? produto;
-            int itemsProcessados = 0;
-            LoggerService.d('Iniciando busca otimizada...');
-            for (var item in data) {
-              itemsProcessados++;
-              if (item == null || item is! Map<String, dynamic>) {
-                continue;
-              }
-              try {
-                final codBarras = item['cod_barras'];
-                if (codBarras == null) continue;
-                final codBarrasStr = BarcodeUtils.sanitize(codBarras.toString());
-                final codigoBarrasStr = BarcodeUtils.sanitize(codigoBarras);
-                if (codBarrasStr == codigoBarrasStr) {
-                  produto = item;
-                  LoggerService.d(
-                    'PRODUTO ENCONTRADO no item $itemsProcessados!',
-                  );
-                  break;
-                }
-              } catch (_) {
-                continue;
-              }
-              if (itemsProcessados % 1000 == 0) {
-                LoggerService.d('Processados $itemsProcessados itens...');
-              }
-            }
-            LoggerService.d(
-              'Busca concluÃ­da. Items processados: $itemsProcessados',
-            );
-            if (produto != null) {
-              return produto;
-            } else {
-              LoggerService.i(
-                'Produto com cÃ³digo "${LoggerService.maskBarcode(codigoBarras)}" nÃ£o encontrado',
-              );
-              return null;
-            }
+            _produtosCache[cacheKey] = data;
+            _cacheTimestamp[cacheKey] = DateTime.now();
+            final produto = _buscarNaLista(data, codigoBarras);
+            if (produto != null) return produto;
+            LoggerService.i('Produto com código "${LoggerService.maskBarcode(codigoBarras)}" não encontrado');
+            return null;
           } else if (data is Map<String, dynamic>) {
-            LoggerService.d('Resposta Ã© um Map, retornando diretamente');
             return data;
           } else {
-            LoggerService.w(
-              'Resposta da API nÃ£o Ã© um Map nem List: ${data.runtimeType}',
-            );
-            throw Exception('Formato de resposta invÃ¡lido');
+            throw Exception('Formato de resposta inválido');
           }
         } catch (e) {
-          LoggerService.e('Erro na decodificaÃ§Ã£o JSON: $e');
-          if (e is FormatException) {
-            throw Exception('Erro de formato na resposta da API');
-          } else {
-            rethrow;
-          }
+          if (e is FormatException) throw Exception('Erro de formato na resposta da API');
+          rethrow;
         }
       } else if (response.statusCode == 404) {
-        LoggerService.i('Produto nÃ£o encontrado (404)');
+        LoggerService.i('Produto não encontrado (404)');
         return null;
       } else {
-        LoggerService.e('Erro do servidor: ${response.statusCode}');
         throw Exception('Erro do servidor: ${response.statusCode}');
       }
     } catch (e) {
       LoggerService.e('Erro detalhado na busca do produto: $e');
-      if (e.toString().contains('TimeoutException')) {
-        throw Exception('Timeout na busca do produto. Tente novamente.');
-      } else if (e.toString().contains('FormatException')) {
-        throw Exception('Erro no formato dos dados da API.');
+      final msg = e.toString();
+      if (msg.contains('TimeoutException')) throw Exception('Timeout na busca do produto. Tente novamente.');
+      if (msg.contains('FormatException')) throw Exception('Erro no formato dos dados da API.');
+      throw Exception('Erro ao buscar produto: $e');
+    }
+  }
+
+  /// Busca um produto pelo barcode usando o endpoint individual (?barcode=)
+  /// Retorna o produto com todos os campos, incluindo valor_compra.
+  Future<Map<String, dynamic>?> buscarProdutoPorBarcode(String codigoBarras) async {
+    if (!isConfigured) throw Exception('API não configurada');
+    try {
+      final codigoSan = BarcodeUtils.sanitize(codigoBarras);
+      final url = Uri.parse('$_baseUrl/produtos').replace(
+        queryParameters: {'barcode': codigoSan},
+      );
+      LoggerService.d('Buscando produto por barcode: ${LoggerService.redactUrl(url.toString())}');
+      final response = await _get(url, timeout: _timeoutMedium);
+      LoggerService.d('Busca por barcode - Status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is Map<String, dynamic>) return data;
+        if (data is List && data.isNotEmpty) return data.first as Map<String, dynamic>;
+        return null;
+      } else if (response.statusCode == 404) {
+        return null;
       } else {
-        throw Exception('Erro ao buscar produto: $e');
+        throw Exception('Erro do servidor: ${response.statusCode}');
       }
+    } catch (e) {
+      LoggerService.e('Erro na busca por barcode: $e');
+      throw Exception('Erro ao buscar produto: $e');
     }
   }
 
@@ -407,73 +432,40 @@ class ApiService {
     }
   }
 
-  /// Busca dados do produto por cÃ³digo de barras usando a API /api/fv/produtos
+  /// Busca dados do produto por código de barras usando a API /api/fv/produtos
   Future<Map<String, dynamic>?> buscarProdutoFV(String codigoBarras) async {
-    if (!isConfigured) {
-      throw Exception('API nÃ£o configurada');
-    }
+    if (!isConfigured) throw Exception('API não configurada');
     try {
+      const cacheKey = 'fv_produtos';
+      LoggerService.d('Código de barras procurado: "${LoggerService.maskBarcode(BarcodeUtils.sanitize(codigoBarras))}"');
+
+      if (_cacheValido(cacheKey)) {
+        LoggerService.d('Cache hit /fv/produtos (${_produtosCache[cacheKey]!.length} itens)');
+        return _buscarNaLista(_produtosCache[cacheKey]!, codigoBarras);
+      }
+
       final url = Uri.parse('$_baseUrl/fv/produtos');
       LoggerService.d('Buscando produto FV com: ${LoggerService.redactUrl(url.toString())}');
-      final codigoSan = BarcodeUtils.sanitize(codigoBarras);
-      LoggerService.d('CÃ³digo de barras procurado: "${LoggerService.maskBarcode(codigoSan)}"');
       final response = await _get(url, timeout: _timeoutLong);
       LoggerService.d('Busca FV - Status: ${response.statusCode}');
       if (response.statusCode == 200) {
-        LoggerService.d(
-          'Tamanho da resposta: ${response.body.length} caracteres',
-        );
+        LoggerService.d('Tamanho da resposta: ${response.body.length} caracteres');
         try {
-          LoggerService.d('Iniciando decodificaÃ§Ã£o JSON...');
           final data = jsonDecode(response.body);
-          LoggerService.d(
-            'JSON decodificado com sucesso. Tipo: ${data.runtimeType}',
-          );
           if (data is List) {
             LoggerService.d('Total de produtos recebidos: ${data.length}');
-            Map<String, dynamic>? produto;
-            int itemsProcessados = 0;
-            LoggerService.d('Iniciando busca otimizada...');
-            for (var item in data) {
-              itemsProcessados++;
-              if (item == null || item is! Map<String, dynamic>) {
-                continue;
-              }
-              try {
-                final codBarras = item['cod_barras'];
-                if (codBarras == null) continue;
-                final codBarrasStr = BarcodeUtils.sanitize(codBarras.toString());
-                final codigoBarrasStr = BarcodeUtils.sanitize(codigoBarras);
-                if (codBarrasStr == codigoBarrasStr) {
-                  produto = item;
-                  LoggerService.d(
-                    'PRODUTO ENCONTRADO no item $itemsProcessados!',
-                  );
-                  break;
-                }
-              } catch (_) {
-                continue;
-              }
-              if (itemsProcessados % 1000 == 0) {
-                LoggerService.d('Processados $itemsProcessados itens...');
-              }
-            }
+            _produtosCache[cacheKey] = data;
+            _cacheTimestamp[cacheKey] = DateTime.now();
+            final produto = _buscarNaLista(data, codigoBarras);
             if (produto != null) {
               LoggerService.i('Produto encontrado com sucesso!');
               return produto;
-            } else {
-              LoggerService.i(
-                'Produto nÃ£o encontrado na lista de ${data.length} itens',
-              );
-              return null;
             }
+            LoggerService.i('Produto não encontrado na lista de ${data.length} itens');
+            return null;
           } else if (data is Map<String, dynamic>) {
-            LoggerService.d('Resposta Ãºnica recebida');
             return data;
           } else {
-            LoggerService.w(
-              'Formato de resposta inesperado: ${data.runtimeType}',
-            );
             return null;
           }
         } catch (e) {
@@ -481,7 +473,6 @@ class ApiService {
           throw Exception('Erro ao processar resposta da API: $e');
         }
       } else {
-        LoggerService.e('Erro HTTP: ${response.statusCode}');
         throw Exception('Erro HTTP ${response.statusCode}');
       }
     } catch (e) {

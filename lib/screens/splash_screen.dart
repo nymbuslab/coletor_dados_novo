@@ -40,31 +40,28 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final tt = Theme.of(context).textTheme;
+    return Scaffold(
       backgroundColor: Colors.blue,
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.inventory_2, size: 80, color: Colors.white),
-              SizedBox(height: 20),
+              const Icon(Icons.inventory_2, size: 80, color: Colors.white),
+              const SizedBox(height: 20),
               Text(
                 'Coletor de Dados',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: tt.headlineLarge!.copyWith(color: Colors.white),
               ),
-              SizedBox(height: 40),
-              CircularProgressIndicator(
+              const SizedBox(height: 40),
+              const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'Inicializando...',
-                style: TextStyle(fontSize: 16, color: Colors.white70),
+                style: tt.bodyLarge!.copyWith(color: Colors.white70),
               ),
             ],
           ),

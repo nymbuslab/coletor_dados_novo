@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nymbus_coletor/core/theme/app_theme.dart';
+import 'package:nymbus_coletor/core/widgets/empty_state.dart';
 import 'package:nymbus_coletor/models/produto.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
 import 'package:nymbus_coletor/services/api_service.dart';
@@ -64,18 +66,20 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
         setState(() {
           _produtoEncontrado = Produto.fromJson(produtoFVData, 0);
         });
-        // Busca valor_compra em segundo plano sem bloquear
-        ApiService.instance.buscarProduto(codigo).then((produtoData) {
-          if (!mounted) return;
-          if (produtoData != null && produtoData['valor_compra'] != null) {
-            setState(() {
-              _produtoEncontrado = Produto.fromJson({
-                ...produtoFVData,
-                'valor_compra': produtoData['valor_compra'],
-              }, 0);
-            });
-          }
-        }).catchError((_) {});
+        // Busca valor_compra via endpoint individual (?barcode=) se o FV não trouxe.
+        if (produtoFVData['valor_compra'] == null) {
+          ApiService.instance.buscarProdutoPorBarcode(codigo).then((produtoData) {
+            if (!mounted) return;
+            if (produtoData != null && produtoData['valor_compra'] != null) {
+              setState(() {
+                _produtoEncontrado = Produto.fromJson({
+                  ...produtoFVData,
+                  'valor_compra': produtoData['valor_compra'],
+                }, 0);
+              });
+            }
+          }).catchError((_) {});
+        }
       } else {
         _showMessage('Produto não encontrado');
       }
@@ -110,10 +114,11 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Consulta de Preço'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.consulta,
         foregroundColor: Colors.white,
       ),
       body: SafeArea(
@@ -124,7 +129,6 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
             children: [
               // Campo de pesquisa
               Card(
-                elevation: 4,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -133,10 +137,9 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: const Text(
+                        child: Text(
                           'Digite o código ou use a câmera para escanear',
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: tt.bodyMedium!.copyWith(
                             color: Colors.grey,
                             fontStyle: FontStyle.italic,
                           ),
@@ -193,19 +196,14 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
               if (_produtoEncontrado != null) ...[
                 Expanded(
                   child: Card(
-                    elevation: 4,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Informações do Produto',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
+                            style: tt.titleLarge!.copyWith(color: Colors.green),
                           ),
                           const SizedBox(height: 16),
 
@@ -266,22 +264,11 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                 ),
               ] else if (!_isSearching) ...[
                 const Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(16),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.search, size: 80, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'Digite um código para consultar',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: EmptyState(
+                    icon: Icons.search,
+                    color: AppColors.consulta,
+                    title: 'Nenhum produto consultado',
+                    subtitle: 'Digite um código ou escaneie para consultar o preço',
                   ),
                 ),
               ],
@@ -313,6 +300,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
   }
 
   Widget _buildInfoRow(String label, String value) {
+    final tt = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -322,14 +310,11 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
             width: 140,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              style: tt.bodyMedium!.copyWith(fontWeight: FontWeight.bold, color: Colors.black87),
             ),
           ),
           Expanded(
-            child: Text(value, style: const TextStyle(color: Colors.black54)),
+            child: Text(value, style: tt.bodyMedium!.copyWith(color: Colors.black54)),
           ),
         ],
       ),

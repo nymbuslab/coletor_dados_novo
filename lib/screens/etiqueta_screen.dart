@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nymbus_coletor/core/theme/app_theme.dart';
+import 'package:nymbus_coletor/core/widgets/empty_state.dart';
+import 'package:nymbus_coletor/core/widgets/status_badge.dart';
 import 'package:nymbus_coletor/models/etiqueta_coletor.dart';
 import 'package:nymbus_coletor/models/produto.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
@@ -41,10 +44,8 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
 
   void _adicionarProdutoSeNecessario() {
     if (widget.produtoParaAdicionar != null) {
-      // Aguarda um frame para garantir que a tela foi construída
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          // Atualiza o número do item baseado na lista atual
           final novoProduto = Produto.fromJson(
             widget.produtoParaAdicionar!.toJson(),
             _contadorItens,
@@ -52,7 +53,6 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
           _produtosPesquisados.add(novoProduto);
           _contadorItens++;
         });
-        // Salva automaticamente
         _salvarEtiquetas();
         _showMessage('Produto adicionado à lista de etiquetas!');
       });
@@ -120,20 +120,14 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
   Future<void> _carregarEtiquetasSalvas() async {
     try {
       final etiquetasSalvas = await StorageService.loadEtiquetas();
-      if (!mounted) return;
-      if (etiquetasSalvas.isNotEmpty) {
-        setState(() {
-          _produtosPesquisados.addAll(etiquetasSalvas);
-          // Atualiza o contador para o próximo item
-          if (etiquetasSalvas.isNotEmpty) {
-            _contadorItens =
-                etiquetasSalvas
-                    .map((e) => e.numeroItem)
-                    .reduce((a, b) => a > b ? a : b) +
-                1;
-          }
-        });
-      }
+      if (!mounted || etiquetasSalvas.isEmpty) return;
+      setState(() {
+        _produtosPesquisados.addAll(etiquetasSalvas);
+        _contadorItens = _produtosPesquisados
+                .map((e) => e.numeroItem)
+                .reduce((a, b) => a > b ? a : b) +
+            1;
+      });
     } catch (e) {
       LoggerService.e('Erro ao carregar etiquetas salvas: $e');
     }
@@ -316,7 +310,6 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     setState(() {
       _produtosPesquisados.removeAt(index);
     });
-    // Salva automaticamente após remover
     _salvarEtiquetas();
     _showMessage('Produto removido da lista');
   }
@@ -344,7 +337,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Etiquetas (${_produtosPesquisados.length})'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.etiqueta,
         foregroundColor: Colors.white,
         actions: [
           if (_produtosPesquisados.isNotEmpty)
@@ -413,50 +406,42 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                   ),
 
                   // Campo de pesquisa
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _codigoController,
-                          decoration: InputDecoration(
-                            labelText: 'Código de Barras',
-                            border: const OutlineInputBorder(),
-                            prefixIcon: IconButton(
-                              icon: const Icon(Icons.camera_alt),
-                              onPressed: _abrirScanner,
-                              tooltip: 'Escanear código de barras',
-                            ),
-                            hintText: 'Digite ou escaneie o código',
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          keyboardType: TextInputType.text,
-                          onSubmitted: (_) => _pesquisarProduto(),
-                        ),
+                  TextField(
+                    controller: _codigoController,
+                    decoration: InputDecoration(
+                      labelText: 'Código de Barras',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: IconButton(
+                        icon: const Icon(Icons.camera_alt),
+                        onPressed: _abrirScanner,
+                        tooltip: 'Escanear código de barras',
                       ),
-                      const SizedBox(width: 8),
-                      ElevatedButton.icon(
-                        onPressed: _isSearching ? null : _pesquisarProduto,
-                        icon: _isSearching
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.add),
-                        label: Text(_isSearching ? 'Buscando...' : 'Adicionar'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 12,
-                          ),
-                        ),
+                      hintText: 'Digite ou escaneie o código',
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    keyboardType: TextInputType.text,
+                    onSubmitted: (_) => _pesquisarProduto(),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _isSearching ? null : _pesquisarProduto,
+                      icon: _isSearching
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.add),
+                      label: Text(_isSearching ? 'Buscando...' : 'Adicionar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -464,43 +449,25 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
 
             // Lista de produtos
             Expanded(
-              child: _produtosPesquisados.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.inventory_2_outlined,
-                            size: 64,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Nenhum produto adicionado',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: _produtosPesquisados.isEmpty
+                    ? const EmptyState(
+                        key: ValueKey('empty'),
+                        icon: Icons.inventory_2_outlined,
+                        color: AppColors.etiqueta,
+                        title: 'Nenhum produto adicionado',
+                        subtitle:
                             'Digite um código de barras e clique em "Adicionar"',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
+                      )
+                    : ListView.builder(
+                        key: const ValueKey('list'),
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _produtosPesquisados.length,
+                        itemBuilder: (context, index) =>
+                            _buildProdutoCard(_produtosPesquisados[index], index),
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _produtosPesquisados.length,
-                      itemBuilder: (context, index) {
-                        final produto = _produtosPesquisados[index];
-                        return _buildProdutoCard(produto, index);
-                      },
-                    ),
+              ),
             ),
 
             // Botão de envio movido para bottomNavigationBar
@@ -543,121 +510,84 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
   }
 
   Widget _buildProdutoCard(Produto produto, int index) {
+    final tt = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Primeira linha: Número do item + Código de barras + Data/hora
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    produto.numeroItemFormatado,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+            // Barra lateral colorida
+            Container(width: 4, color: AppColors.etiqueta),
+            // Conteúdo
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Linha 1: badge + barcode + data + delete
+                    Row(
+                      children: [
+                        StatusBadge(
+                          label: produto.numeroItemFormatado,
+                          color: AppColors.etiqueta,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            produto.codBarras,
+                            style: tt.labelLarge,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          produto.dataHoraFormatada,
+                          style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
+                        ),
+                        const SizedBox(width: 4),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          color: Colors.red,
+                          onPressed: () => _removerProduto(index),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    produto.codBarras,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  produto.dataHoraFormatada,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                  onPressed: () => _removerProduto(index),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            // Segunda linha: Nome do produto
-            Text(
-              produto.produto,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 8),
-
-            // Terceira linha: Preço + Tipo de etiqueta
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    produto.precoFormatado,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      produto.tipoEtiqueta ??
-                          _tipoEtiquetaGlobal?.nome ??
-                          'Sem tipo',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.orange,
-                      ),
+                    const SizedBox(height: 8),
+                    // Linha 2: nome do produto
+                    Text(
+                      produto.produto,
+                      style: tt.titleMedium,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    // Linha 3: preço + tipo de etiqueta
+                    Row(
+                      children: [
+                        StatusBadge(label: produto.precoFormatado, color: AppColors.success),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: StatusBadge(
+                            label: produto.tipoEtiqueta ?? _tipoEtiquetaGlobal?.nome ?? 'Sem tipo',
+                            color: AppColors.warning,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
       ),
     );
   }
+
 }

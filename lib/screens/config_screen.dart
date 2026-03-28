@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
 import 'package:nymbus_coletor/services/feedback_service.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
     final config = configProvider.config;
     _enderecoController.text = config.endereco;
     _portaController.text = config.porta;
-    // Mantém o status visual como conectado se o app já estiver configurado
     _isConnected = configProvider.isConfigured;
   }
 
@@ -55,7 +55,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
     final configProvider = Provider.of<ConfigProvider>(context, listen: false);
 
     try {
-      // Salva a configuração temporariamente para teste
       final saveSuccess = await configProvider.saveConfig(
         endereco: _enderecoController.text.trim(),
         porta: _portaController.text.trim(),
@@ -70,7 +69,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
         return;
       }
 
-      // Testa conectividade
       final isConnected = await configProvider.testarConectividade();
       if (!isConnected) {
         if (mounted) {
@@ -83,7 +81,6 @@ class _ConfigScreenState extends State<ConfigScreen> {
         return;
       }
 
-      // Valida licença
       final isValid = await configProvider.validarLicenca();
 
       if (mounted) {
@@ -95,16 +92,12 @@ class _ConfigScreenState extends State<ConfigScreen> {
         });
       }
 
-      if (isValid) {
-        if (mounted) {
-          FeedbackService.showSnack(
-            context,
-            'Conexão testada com sucesso!',
-            type: FeedbackService.classifyMessage(
-              'Conexão testada com sucesso!',
-            ),
-          );
-        }
+      if (isValid && mounted) {
+        FeedbackService.showSnack(
+          context,
+          'Conexão testada com sucesso!',
+          type: FeedbackService.classifyMessage('Conexão testada com sucesso!'),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -139,287 +132,350 @@ class _ConfigScreenState extends State<ConfigScreen> {
       FeedbackService.showSnack(
         context,
         'Configuração salva com sucesso!',
-        type: FeedbackService.classifyMessage(
-          'Configuração salva com sucesso!',
-        ),
+        type: FeedbackService.classifyMessage('Configuração salva com sucesso!'),
       );
 
-      // Navega baseado na origem
       if (widget.fromScreen == 'home') {
-        // Se veio da tela principal, volta para ela
         navigator.pushReplacementNamed('/home');
       } else {
-        // Se veio da tela de login ou splash, vai para login
         navigator.pushReplacementNamed('/login');
       }
     }
   }
 
+  void _voltar() {
+    final navigator = Navigator.of(context);
+    if (widget.fromScreen == 'home') {
+      navigator.pushReplacementNamed('/home');
+    } else {
+      navigator.pushReplacementNamed('/login');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configuração'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: Consumer<ConfigProvider>(
           builder: (context, configProvider, child) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // ── Header ──────────────────────────────────────────────
+                    Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: AppColors.seed.withValues(alpha: 0.08),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.settings_outlined,
+                              size: 48,
+                              color: AppColors.seed.withValues(alpha: 0.75),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text('Configurar Servidor', style: tt.headlineSmall),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Informe o endereço e porta do servidor',
+                            style: tt.bodyMedium!.copyWith(color: Colors.grey[600]),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // ── Card: Licença ────────────────────────────────────────
                     Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                Icon(Icons.key, color: Colors.blue),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Licença (gerada automaticamente)',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.seed.withValues(alpha: 0.10),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.vpn_key_outlined,
+                                    size: 18,
+                                    color: AppColors.seed,
                                   ),
                                 ),
+                                const SizedBox(width: 10),
+                                Text('Licença do dispositivo', style: tt.titleSmall),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: AppColors.seed.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.grey[300]!),
+                                border: Border.all(
+                                  color: AppColors.seed.withValues(alpha: 0.20),
+                                ),
                               ),
                               child: Text(
-                                configProvider.config.licenca,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 2,
+                                configProvider.config.licenca.isEmpty
+                                    ? 'Aguardando geração...'
+                                    : configProvider.config.licenca,
+                                style: tt.bodyMedium!.copyWith(
+                                  fontFamily: 'monospace',
+                                  letterSpacing: 1.5,
+                                  color: AppColors.seed,
+                                  fontWeight: FontWeight.w600,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: _enderecoController,
-                      decoration: const InputDecoration(
-                        labelText: 'Endereço (IP ou DDNS)',
-                        prefixIcon: Icon(Icons.language),
-                        border: OutlineInputBorder(),
-                        hintText: 'Ex: 192.168.1.100',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Por favor, informe o endereço';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _portaController,
-                      decoration: const InputDecoration(
-                        labelText: 'Porta',
-                        prefixIcon: Icon(Icons.settings_ethernet),
-                        border: OutlineInputBorder(),
-                        hintText: 'Ex: 8787',
-                      ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Por favor, informe a porta';
-                        }
-                        final port = int.tryParse(value.trim());
-                        if (port == null || port < 1 || port > 65535) {
-                          return 'Porta deve ser um número entre 1 e 65535';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
 
-                    // Indicador de status de conexão
+                    const SizedBox(height: 16),
+
+                    // ── Card: Conexão ────────────────────────────────────────
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.info.withValues(alpha: 0.10),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    Icons.dns_outlined,
+                                    size: 18,
+                                    color: AppColors.info,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text('Dados do servidor', style: tt.titleSmall),
+                                const Spacer(),
+                                _StatusChip(connected: _isConnected),
+                              ],
+                            ),
+                            const Divider(height: 24),
+                            TextFormField(
+                              controller: _enderecoController,
+                              decoration: const InputDecoration(
+                                labelText: 'Endereço (IP ou DDNS)',
+                                prefixIcon: Icon(Icons.language_outlined),
+                                hintText: 'Ex: 192.168.1.100',
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Por favor, informe o endereço';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _portaController,
+                              decoration: const InputDecoration(
+                                labelText: 'Porta',
+                                prefixIcon: Icon(Icons.settings_ethernet_outlined),
+                                hintText: 'Ex: 8787',
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Por favor, informe a porta';
+                                }
+                                final port = int.tryParse(value.trim());
+                                if (port == null || port < 1 || port > 65535) {
+                                  return 'Porta deve ser um número entre 1 e 65535';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // ── Mensagem de validação ────────────────────────────────
+                    if (_validationMessage != null) ...[
+                      const SizedBox(height: 12),
+                      _ValidationBanner(message: _validationMessage!),
+                    ],
+
+                    if (configProvider.errorMessage != null) ...[
+                      const SizedBox(height: 12),
+                      _ValidationBanner(message: configProvider.errorMessage!),
+                    ],
+
+                    const SizedBox(height: 24),
+
+                    // ── Botões ───────────────────────────────────────────────
+                    ElevatedButton.icon(
+                      onPressed: _isSyncing ? null : _syncConfiguration,
+                      icon: _isSyncing
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Icon(Icons.sync),
+                      label: Text(_isSyncing ? 'Testando conexão...' : 'Testar Conexão'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.seed,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          _isConnected ? Icons.wifi : Icons.wifi_off,
-                          color: _isConnected ? Colors.green : Colors.grey,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _isConnected ? 'Conectado' : 'Desconectado',
-                          style: TextStyle(
-                            color: _isConnected ? Colors.green : Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    if (_validationMessage != null)
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: _validationMessage!.contains('✓')
-                              ? Colors.green[50]
-                              : Colors.red[50],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: _validationMessage!.contains('✓')
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              _validationMessage!.contains('✓')
-                                  ? Icons.check_circle
-                                  : Icons.error,
-                              color: _validationMessage!.contains('✓')
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _validationMessage!,
-                                style: TextStyle(
-                                  color: _validationMessage!.contains('✓')
-                                      ? Colors.green[800]
-                                      : Colors.red[800],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    // BotÃões
-                    Column(
-                      children: [
-                        // Primeira linha: Voltar e Sincronizar
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  final navigator = Navigator.of(context);
-                                  if (widget.fromScreen == 'home') {
-                                    // Se veio da tela principal, volta para ela
-                                    navigator.pushReplacementNamed('/home');
-                                  } else {
-                                    // Se veio da tela de login ou splash, vai para login em vez de dar pop
-                                    navigator.pushReplacementNamed('/login');
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.grey,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                ),
-                                child: const Text('Voltar'),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _isSyncing
-                                    ? null
-                                    : _syncConfiguration,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                ),
-                                child: _isSyncing
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
-                                        ),
-                                      )
-                                    : const Text('Sincronizar'),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Segunda linha: Botão Salvar (só ativo se conectado)
-                        SizedBox(
-                          width: double.infinity,
+                        Expanded(
                           child: ElevatedButton(
-                            onPressed: _isConnected ? _saveAndNavigate : null,
+                            onPressed: _voltar,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _isConnected
-                                  ? Colors.green
-                                  : Colors.grey,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: Colors.grey[200],
+                              foregroundColor: Colors.grey[800],
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                             ),
-                            child: const Text('Salvar e Continuar'),
+                            child: const Text('Voltar'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _isConnected ? _saveAndNavigate : null,
+                            icon: const Icon(Icons.check_circle_outline),
+                            label: const Text('Salvar'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.success,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    if (configProvider.errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.red[50],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.error, color: Colors.red),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  configProvider.errorMessage!,
-                                  style: TextStyle(color: Colors.red[800]),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+// ── Widgets auxiliares ──────────────────────────────────────────────────────
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.connected});
+
+  final bool connected;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = connected ? AppColors.success : Colors.grey;
+    final label = connected ? 'Conectado' : 'Desconectado';
+    final icon = connected ? Icons.wifi : Icons.wifi_off;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.30)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ValidationBanner extends StatelessWidget {
+  const _ValidationBanner({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final isSuccess = message.contains('✓');
+    final color = isSuccess ? AppColors.success : AppColors.danger;
+    final icon = isSuccess ? Icons.check_circle_outline : Icons.error_outline;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.30)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: color,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
