@@ -474,9 +474,10 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                         key: const ValueKey('list'),
                         padding: const EdgeInsets.all(16),
                         itemCount: _produtosPesquisados.length,
-                        itemBuilder: (context, index) => _buildProdutoCard(
-                          _produtosPesquisados[index],
-                          index,
+                        itemBuilder: (context, index) => _ProdutoCard(
+                          produto: _produtosPesquisados[index],
+                          tipoEtiquetaFallback: _tipoEtiquetaGlobal?.nome,
+                          onRemover: () => _removerProduto(index),
                         ),
                       ),
               ),
@@ -521,7 +522,22 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     );
   }
 
-  Widget _buildProdutoCard(Produto produto, int index) {
+}
+
+/// Card de um produto na lista de etiquetas (widget extraído de método).
+class _ProdutoCard extends StatelessWidget {
+  const _ProdutoCard({
+    required this.produto,
+    required this.tipoEtiquetaFallback,
+    required this.onRemover,
+  });
+
+  final Produto produto;
+  final String? tipoEtiquetaFallback;
+  final VoidCallback onRemover;
+
+  @override
+  Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -558,7 +574,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                   icon: const Icon(Icons.delete_outline, size: 18),
                   color: AppColors.danger,
                   tooltip: 'Remover item',
-                  onPressed: () => _removerProduto(index),
+                  onPressed: onRemover,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(
                     minWidth: 40,
@@ -589,7 +605,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                   child: StatusBadge(
                     label:
                         produto.tipoEtiqueta ??
-                        _tipoEtiquetaGlobal?.nome ??
+                        tipoEtiquetaFallback ??
                         'Sem tipo',
                     color: AppColors.warning,
                   ),
