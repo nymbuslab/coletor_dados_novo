@@ -347,8 +347,6 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Etiquetas (${_produtosPesquisados.length})'),
-        backgroundColor: AppColors.etiqueta,
-        foregroundColor: Colors.white,
         actions: [
           if (_produtosPesquisados.isNotEmpty)
             IconButton(

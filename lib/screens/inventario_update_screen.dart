@@ -61,8 +61,6 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Atualizar Estoque'),
-        backgroundColor: AppColors.inventario,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.check),

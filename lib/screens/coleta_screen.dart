@@ -274,8 +274,6 @@ class _ColetaScreenState extends State<ColetaScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.titulo),
-        backgroundColor: widget.corPrimaria,
-        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: Column(

@@ -137,8 +137,6 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Consulta de Preço'),
-        backgroundColor: AppColors.consulta,
-        foregroundColor: Colors.white,
       ),
       body: SafeArea(
         child: Padding(
