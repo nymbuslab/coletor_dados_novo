@@ -116,7 +116,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showMessage('Erro ao carregar tipos de etiquetas: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     } finally {
       if (mounted) {
@@ -175,7 +175,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     } catch (e) {
       LoggerService.e('EtiquetaScreen: Erro no scanner: $e');
       if (mounted) {
-        _showMessage('Erro ao abrir scanner: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     }
   }
@@ -223,7 +223,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
       }
     } catch (e) {
       LoggerService.e('EtiquetaScreen: Erro ao pesquisar produto: $e');
-      _showMessage('Erro ao pesquisar produto: $e');
+      _showMessage(FeedbackService.friendlyError(e));
     } finally {
       if (mounted) {
         setState(() {
@@ -305,7 +305,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     } catch (e) {
       LoggerService.e('EtiquetaScreen: Erro ao enviar etiquetas: $e');
       if (mounted) {
-        _showMessage('Erro ao enviar etiquetas: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     } finally {
       if (mounted) {

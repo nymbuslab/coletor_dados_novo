@@ -114,7 +114,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showMessage('Erro ao abrir scanner: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     }
   }
@@ -159,7 +159,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showMessage('Erro ao pesquisar produto: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     } finally {
       if (mounted) {
@@ -260,7 +260,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
       navigator.pushNamedAndRemoveUntil('/home', (route) => false);
     } catch (e) {
       if (mounted) {
-        _showMessage('Erro ao enviar ${widget.titulo.toLowerCase()}: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     }
   }

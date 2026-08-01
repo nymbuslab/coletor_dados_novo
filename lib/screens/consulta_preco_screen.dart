@@ -43,7 +43,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showMessage('Erro ao abrir scanner: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     }
   }
@@ -95,7 +95,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
       }
     } catch (e) {
       if (mounted && seq == _consultaSeq) {
-        _showMessage('Erro ao consultar produto: $e');
+        _showMessage(FeedbackService.friendlyError(e));
       }
     } finally {
       // Só a consulta mais recente controla o indicador de carregamento.

@@ -39,6 +39,50 @@ class FeedbackService {
     );
   }
 
+  /// Traduz um erro técnico (Exception, timeout, rede, HTTP) em mensagem
+  /// amigável em português para exibir ao usuário. O detalhe técnico deve
+  /// continuar indo para o log (LoggerService), não para a tela.
+  static String friendlyError(Object error) {
+    final s = error.toString().toLowerCase();
+    bool has(String needle) => s.contains(needle);
+
+    if (has('timeout') || has('esgotado')) {
+      return 'Erro: tempo de conexão esgotado. Tente novamente.';
+    }
+    if (has('socketexception') ||
+        has('failed host lookup') ||
+        has('failed to fetch') ||
+        has('xmlhttprequest') ||
+        has('connection refused') ||
+        has('network') ||
+        has('sem conexão')) {
+      return 'Erro: sem conexão com o servidor. Verifique o endereço, a porta e a rede.';
+    }
+    if (has('401') ||
+        has('403') ||
+        has('unauthorized') ||
+        has('forbidden') ||
+        has('não autorizado') ||
+        has('nao autorizado')) {
+      return 'Falha de autorização. Valide sua licença novamente.';
+    }
+    if (has('500') ||
+        has('502') ||
+        has('503') ||
+        has('504') ||
+        has('erro do servidor') ||
+        has('erro http 5')) {
+      return 'Erro no servidor. Tente novamente em instantes.';
+    }
+    if (has('formatexception') ||
+        has('formato') ||
+        has('json') ||
+        has('decodificar')) {
+      return 'Erro ao ler a resposta do servidor.';
+    }
+    return 'Falha ao concluir a operação. Tente novamente.';
+  }
+
   /// Heurística simples para classificar a mensagem e aplicar cor adequada
   static FeedbackType classifyMessage(String message) {
     final m = message.toLowerCase();
