@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nymbus_coletor/models/inventario_item.dart';
 
 void main() {
-  final dtFixa = DateTime(2025, 6, 15, 14, 30, 0);
+  final dtFixa = DateTime(2025, 6, 15, 14, 30);
 
   InventarioItem makeItem({
     int item = 1,

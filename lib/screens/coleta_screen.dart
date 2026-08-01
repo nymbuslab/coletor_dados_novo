@@ -170,7 +170,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
     }
   }
 
-  void _abrirTelaQuantidade(Produto produto) async {
+  Future<void> _abrirTelaQuantidade(Produto produto) async {
     final navigator = Navigator.of(context);
     final resultado = await navigator.pushNamed<InventarioItem>(
       '/inventario-update',
@@ -188,7 +188,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
     }
   }
 
-  void _removerItem(int index) async {
+  Future<void> _removerItem(int index) async {
     setState(() {
       _itens.removeAt(index);
     });
@@ -214,7 +214,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
     _abrirEdicaoItem(produto, index);
   }
 
-  void _abrirEdicaoItem(Produto produto, int index) async {
+  Future<void> _abrirEdicaoItem(Produto produto, int index) async {
     final navigator = Navigator.of(context);
     final resultado = await navigator.pushNamed<InventarioItem>(
       '/inventario-update',

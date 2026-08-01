@@ -40,7 +40,6 @@ void main() {
         endereco: '192.168.1.1',
         porta: '3000',
         licenca: 'LIC-001',
-        isConfigured: false,
       );
       final copy = original.copyWith(porta: '9090', isConfigured: true);
 

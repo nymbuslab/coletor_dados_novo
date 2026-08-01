@@ -18,8 +18,7 @@ class EntradaScreen extends StatelessWidget {
             'Pesquise produtos para adicionar à entrada',
         labelBotaoEnvio: 'Enviar Entrada',
         onCarregarItens: StorageService.loadEntradaItens,
-        onSalvarItens: (List<InventarioItem> itens) =>
-            StorageService.saveEntradaItens(itens),
+        onSalvarItens: StorageService.saveEntradaItens,
         onLimparItens: StorageService.clearEntradaItens,
         onEnviarItens: (List<InventarioItem> itens) =>
             ApiService.instance.enviarEntrada(itens),

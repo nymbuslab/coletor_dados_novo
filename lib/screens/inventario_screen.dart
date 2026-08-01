@@ -18,8 +18,7 @@ class InventarioScreen extends StatelessWidget {
             'Pesquise produtos para adicionar ao inventário',
         labelBotaoEnvio: 'Enviar Inventário',
         onCarregarItens: StorageService.loadInventarioItens,
-        onSalvarItens: (List<InventarioItem> itens) =>
-            StorageService.saveInventarioItens(itens),
+        onSalvarItens: StorageService.saveInventarioItens,
         onLimparItens: StorageService.clearInventarioItens,
         onEnviarItens: (List<InventarioItem> itens) =>
             ApiService.instance.enviarInventario(itens),

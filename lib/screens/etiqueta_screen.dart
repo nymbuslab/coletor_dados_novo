@@ -100,9 +100,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
 
       if (mounted) {
         setState(() {
-          _tiposEtiquetas = etiquetas
-              .map((e) => TipoEtiqueta.fromJson(e))
-              .toList();
+          _tiposEtiquetas = etiquetas.map(TipoEtiqueta.fromJson).toList();
           if (_tiposEtiquetas.isNotEmpty) {
             // Procura por "Gondola Grande" como padrão
             _tipoEtiquetaGlobal = _tiposEtiquetas.firstWhere(
@@ -589,7 +587,6 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                           child: StatusBadge(
                             label: produto.tipoEtiqueta ?? _tipoEtiquetaGlobal?.nome ?? 'Sem tipo',
                             color: AppColors.warning,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],

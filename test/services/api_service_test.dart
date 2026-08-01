@@ -193,7 +193,7 @@ void main() {
     test('lança exceção para status de erro', () async {
       final client = MockClient((_) async => http.Response('', 503));
       final svc = _makeService(client);
-      expect(() => svc.buscarTiposEtiquetas(), throwsException);
+      expect(svc.buscarTiposEtiquetas, throwsException);
     });
   });
 

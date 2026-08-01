@@ -1,1 +1,19 @@
 include: package:flutter_lints/flutter.yaml
+
+# Lints estritos (Lote 8). Regras que pedem julgamento de comportamento ou novos
+# imports (unawaited_futures, strict-inference) ficam para um lote proprio.
+linter:
+  rules:
+    # Segurança de assíncrono
+    - avoid_void_async
+    # Consistência de estilo
+    - always_declare_return_types
+    - directives_ordering
+    - prefer_single_quotes
+    - prefer_final_locals
+    - use_super_parameters
+    # Redução de ruído / código mais enxuto
+    - avoid_redundant_argument_values
+    - unnecessary_parenthesis
+    - unnecessary_lambdas
+    - avoid_unnecessary_containers
