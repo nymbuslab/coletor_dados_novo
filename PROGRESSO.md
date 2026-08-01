@@ -12,14 +12,7 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 8.2] Extrair sub-widgets — em andamento (1 de 3).**
-  - [x] `_buildInfoRow` → widget `const` `_InfoRow` (`8d0c0db`).
-  - [ ] `_buildItemCard` ([coleta:397](lib/screens/coleta_screen.dart#L397)) → widget `const`
-    (usa `widget.corPrimaria`, `_editarItem`/`_removerItem`, `_formatarQuantidade` — passar
-    como parâmetros/callbacks).
-  - [ ] `_buildProdutoCard` ([etiqueta:520](lib/screens/etiqueta_screen.dart#L520)) → widget
-    `const` (usa `AppColors.etiqueta`, `_removerProduto`, `_tipoEtiquetaGlobal`).
-  - Sensível a render — idealmente validar em device.
+_(nada no momento)_
 
 ---
 
@@ -56,6 +49,16 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 8.2] Extrair sub-widgets.** — 2026-08-01 _(3 commits)_
+  Três métodos `_build*` que retornavam `Widget` viraram `StatelessWidget` próprios,
+  criando fronteira de rebuild por item da lista (antes rebuildavam junto com a tela).
+  **`_InfoRow`** (`8d0c0db`) — linha rótulo:valor da Consulta de Preço (9 call sites).
+  **`_ItemCard`** (`d626785`) — card de item coletado (Coleta/Inventário/Entrada); recebe
+  cor, item e callbacks editar/remover por parâmetro; `_formatarQuantidade` virou função de
+  nível superior. **`_ProdutoCard`** (`ebd54ea`) — card de produto na Etiqueta; recebe
+  produto, tipo de fallback e callback remover. **UI não validada visualmente** (sem device).
+  Validado: `flutter analyze` limpo, 88 testes.
 
 - [x] **[Lote 8.1] Lints adiados religados.** — 2026-08-01 (`3fcf401`)
   Ligadas as duas regras que ficaram fora do Lote 8, com os 13 findings corrigidos sem
