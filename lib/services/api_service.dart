@@ -104,6 +104,18 @@ class ApiService {
         if (response.statusCode == 401 || response.statusCode == 403) {
           _handleUnauthorized();
         }
+        // GET é idempotente: erro transitório do servidor (5xx) é re-tentado.
+        // Ao esgotar as tentativas, devolve a última resposta para o chamador
+        // tratar o status como antes.
+        if (response.statusCode >= 500 && attempt < _maxRetries) {
+          attempt++;
+          final delay = _backoffDelay(attempt);
+          LoggerService.w(
+            'GET retornou ${response.statusCode} (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
+          );
+          await Future.delayed(delay);
+          continue;
+        }
         return response;
       } catch (e) {
         attempt++;
