@@ -21,10 +21,6 @@ _(nada no momento)_
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P2] Lote 8.1 — Lints adiados.** Ligar `unawaited_futures` (7 sites; envolver em
-  `unawaited()` + import `dart:async`, sem trocar por `await` para não mudar timing) e
-  `strict-inference` (tipar `Future<void>.delayed(...)` nos ~5 sites). Fica separado por
-  exigir julgamento de comportamento site a site.
 - **[P2] Lote 8.2 — Extrair sub-widgets.** Converter `_buildItemCard`
   ([coleta:397](lib/screens/coleta_screen.dart#L397)), `_buildProdutoCard`
   ([etiqueta:520](lib/screens/etiqueta_screen.dart#L520)) e `_buildInfoRow`
@@ -58,6 +54,13 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 8.1] Lints adiados religados.** — 2026-08-01 (`3fcf401`)
+  Ligadas as duas regras que ficaram fora do Lote 8, com os 13 findings corrigidos sem
+  mudança de comportamento: **`unawaited_futures`** (8 sites fire-and-forget — navegação e
+  busca disparada — envolvidos em `unawaited()` + import `dart:async`; **não** troquei por
+  `await`, para não alterar timing) e **`strict-inference`** (5 sites `Future.delayed(...)`
+  → `Future<void>.delayed(...)`). Validado: `flutter analyze` limpo, 88 testes.
 
 - [x] **[Lote 8] Qualidade/consistência.** — 2026-08-01 _(4 commits)_
   **Commit 1 (`501ba59`) — dead code:** removidos `ConfigProvider.sincronizar`,
