@@ -21,7 +21,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    return Scaffold(
+    return PopScope(
+      // Back do sistema na Home vai para o Login (mesmo destino da seta visível),
+      // em vez de comportamento indefinido de pop sem rota abaixo.
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _voltarParaLogin();
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Coletor de Dados'),
         leading: IconButton(
@@ -104,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
+      ),
       ),
     );
   }

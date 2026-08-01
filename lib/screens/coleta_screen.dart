@@ -288,7 +288,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
             // Campo de pesquisa
             Container(
               padding: const EdgeInsets.all(16),
-              color: Colors.grey[100],
+              color: AppColors.surfaceSubtle,
               child: Column(
                 children: [
                   Container(
@@ -382,7 +382,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
                       '${widget.labelBotaoEnvio} (${_itens.length} itens)',
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.success,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -431,19 +431,27 @@ class _ColetaScreenState extends State<ColetaScreen> {
                         const SizedBox(width: 4),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 18),
-                          color: Colors.blue,
+                          color: AppColors.info,
+                          tooltip: 'Editar item',
                           onPressed: () => _editarItem(index),
                           padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
                           visualDensity: VisualDensity.compact,
                         ),
                         const SizedBox(width: 4),
                         IconButton(
                           icon: const Icon(Icons.delete_outline, size: 18),
-                          color: Colors.red,
+                          color: AppColors.danger,
+                          tooltip: 'Remover item',
                           onPressed: () => _removerItem(index),
                           padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
                           visualDensity: VisualDensity.compact,
                         ),
                       ],

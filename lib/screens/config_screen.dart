@@ -134,7 +134,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
       );
 
       if (widget.fromScreen == 'home') {
-        navigator.pushReplacementNamed('/home');
+        // Volta para a Home que já está na pilha em vez de empilhar outra.
+        navigator.pop();
       } else {
         navigator.pushReplacementNamed('/login');
       }
@@ -144,7 +145,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
   void _voltar() {
     final navigator = Navigator.of(context);
     if (widget.fromScreen == 'home') {
-      navigator.pushReplacementNamed('/home');
+      // Volta para a Home existente (não duplica a tela na pilha).
+      navigator.pop();
     } else {
       navigator.pushReplacementNamed('/login');
     }

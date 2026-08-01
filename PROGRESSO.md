@@ -12,9 +12,10 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 6] UX + navegação.** _(a iniciar)_
-  Navegação Home→Config duplicando a Home; back do sistema na Home; snackbar limpar
-  anterior + não ser cortado pela navegação; áreas de toque + tooltip; cores fixas → tema.
+- **[Lote 7] Robustez do app.** _(a iniciar)_
+  Captura global de erro (`runZonedGuarded`/`FlutterError.onError`);
+  `network_security_config.xml` p/ cleartext (rede local); rota `default` do
+  `onGenerateRoute`; mover `setUnauthorizedHandler` para fora do `build()`.
 
 ---
 
@@ -23,9 +24,6 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P2] Lote 7 — Robustez do app.** Captura global de erro (`runZonedGuarded`/`FlutterError.onError`);
-  `network_security_config.xml` p/ cleartext (rede local); rota `default` do `onGenerateRoute`;
-  mover `setUnauthorizedHandler` para fora do `build()`.
 - **[P2] Lote 8 — Qualidade/consistência.** Remover dead code (`buscarProduto` não-FV,
   `sincronizar`, factories não usados); `IntrinsicHeight`→layout leve; `_build...()`→widget;
   lints estritos; versões de deps; retry cobrir 5xx (GET).
@@ -55,6 +53,16 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 6] UX + navegação.** — 2026-08-01
+  **6A (navegação/snackbar):** Config volta para a Home existente com `pop()` (não empilha
+  outra Home); `PopScope` na Home manda o back do sistema para o Login (igual à seta);
+  `FeedbackService.showSnack` chama `hideCurrentSnackBar()` (não empilha e sobrevive à
+  navegação via messenger do `MaterialApp`). **6B (a11y):** botões editar/remover dos cards
+  ganharam `tooltip` e alvo de toque mínimo (40dp). **6C (cores→tema):** nas 3 telas de busca,
+  `Colors.blue/green/orange/grey[...]` → tokens do `AppColors` (etiqueta/consulta/success/
+  warning/danger/info/surfaceSubtle). Resíduo menor: AppBar azul do `scanner_service`
+  (exigiria novo import) ficou fora. Validado: `flutter analyze` limpo, 101 testes.
 
 - [x] **[Lote 5] Mensagens amigáveis + encoding.** — 2026-08-01 _(2 commits)_
   Parte A (`3487702`): `FeedbackService.friendlyError` traduz erro técnico

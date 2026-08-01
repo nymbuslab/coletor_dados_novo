@@ -16,7 +16,10 @@ class FeedbackService {
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
     );
-    ScaffoldMessenger.of(context).showSnackBar(snack);
+    final messenger = ScaffoldMessenger.of(context);
+    // Remove o snackbar anterior para não empilhar mensagens.
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(snack);
   }
 
   static Future<void> showErrorDialog(

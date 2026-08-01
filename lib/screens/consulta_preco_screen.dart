@@ -190,7 +190,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                             _isSearching ? 'Consultando...' : 'Consultar',
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: AppColors.consulta,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
@@ -214,7 +214,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                         children: [
                           Text(
                             'Informações do Produto',
-                            style: tt.titleLarge!.copyWith(color: Colors.green),
+                            style: tt.titleLarge!.copyWith(color: AppColors.consulta),
                           ),
                           const SizedBox(height: 16),
 
@@ -298,7 +298,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                     icon: const Icon(Icons.label),
                     label: const Text('Enviar para Etiqueta'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
+                      backgroundColor: AppColors.warning,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),

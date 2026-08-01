@@ -363,7 +363,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
           children: [
             // Seção de configuração e pesquisa
             Container(
-              color: Colors.grey[50],
+              color: AppColors.surfaceSubtle,
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
@@ -447,7 +447,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                           : const Icon(Icons.add),
                       label: Text(_isSearching ? 'Buscando...' : 'Adicionar'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppColors.etiqueta,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -506,7 +506,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                           : 'Enviar ${_produtosPesquisados.length} Etiqueta(s) para Servidor',
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppColors.etiqueta,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       minimumSize: const Size(double.infinity, 50),
@@ -559,10 +559,14 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                         const SizedBox(width: 4),
                         IconButton(
                           icon: const Icon(Icons.delete_outline, size: 18),
-                          color: Colors.red,
+                          color: AppColors.danger,
+                          tooltip: 'Remover item',
                           onPressed: () => _removerProduto(index),
                           padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
+                          constraints: const BoxConstraints(
+                            minWidth: 40,
+                            minHeight: 40,
+                          ),
                           visualDensity: VisualDensity.compact,
                         ),
                       ],
