@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -44,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: AppColors.dark,
       body: SafeArea(
         child: Center(
           child: Column(
@@ -58,12 +59,14 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 40),
               const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.actionOnDark),
               ),
               const SizedBox(height: 20),
               Text(
                 'Inicializando...',
-                style: tt.bodyLarge!.copyWith(color: Colors.white70),
+                style: tt.bodyLarge!.copyWith(
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
               ),
             ],
           ),
