@@ -44,6 +44,7 @@ class ConfigProvider extends ChangeNotifier {
     required String endereco,
     required String porta,
     String? licenca,
+    bool markConfigured = true,
   }) async {
     _setLoading(true);
     try {
@@ -51,7 +52,7 @@ class ConfigProvider extends ChangeNotifier {
         endereco: endereco,
         porta: porta,
         licenca: licenca ?? _config.licenca,
-        isConfigured: true,
+        isConfigured: markConfigured,
       );
 
       final success = await StorageService.saveConfig(newConfig);

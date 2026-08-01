@@ -21,6 +21,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
   bool _isSyncing = false;
   bool _isConnected = false;
   String? _validationMessage;
+  bool _validationSuccess = false;
 
   @override
   void initState() {
@@ -50,14 +51,18 @@ class _ConfigScreenState extends State<ConfigScreen> {
       _isSyncing = true;
       _isConnected = false;
       _validationMessage = null;
+      _validationSuccess = false;
     });
 
     final configProvider = Provider.of<ConfigProvider>(context, listen: false);
 
     try {
+      // Salva só para configurar a baseUrl do teste — NÃO marca como configurado
+      // ainda; isConfigured só vira true após validar (no botão Salvar).
       final saveSuccess = await configProvider.saveConfig(
         endereco: _enderecoController.text.trim(),
         porta: _portaController.text.trim(),
+        markConfigured: false,
       );
 
       if (!saveSuccess) {
@@ -86,18 +91,11 @@ class _ConfigScreenState extends State<ConfigScreen> {
       if (mounted) {
         setState(() {
           _isConnected = isValid;
+          _validationSuccess = isValid;
           _validationMessage = isValid
-              ? 'Conexão estabelecida com sucesso! Licença válida ✓'
-              : 'Conectado, mas licença inválida ✗';
+              ? 'Conexão estabelecida com sucesso! Licença válida'
+              : 'Conectado, mas licença inválida';
         });
-      }
-
-      if (isValid && mounted) {
-        FeedbackService.showSnack(
-          context,
-          'Conexão testada com sucesso!',
-          type: FeedbackService.classifyMessage('Conexão testada com sucesso!'),
-        );
       }
     } catch (e) {
       if (mounted) {
@@ -326,14 +324,15 @@ class _ConfigScreenState extends State<ConfigScreen> {
                     ),
 
                     // ── Mensagem de validação ────────────────────────────────
+                    // Fonte única de mensagem de status da tela (erro ou sucesso).
+                    // Não renderizar também configProvider.errorMessage aqui: o
+                    // provider seta o mesmo texto e apareceriam dois banners iguais.
                     if (_validationMessage != null) ...[
                       const SizedBox(height: 12),
-                      _ValidationBanner(message: _validationMessage!),
-                    ],
-
-                    if (configProvider.errorMessage != null) ...[
-                      const SizedBox(height: 12),
-                      _ValidationBanner(message: configProvider.errorMessage!),
+                      _ValidationBanner(
+                        message: _validationMessage!,
+                        isSuccess: _validationSuccess,
+                      ),
                     ],
 
                     const SizedBox(height: 24),
@@ -444,13 +443,13 @@ class _StatusChip extends StatelessWidget {
 }
 
 class _ValidationBanner extends StatelessWidget {
-  const _ValidationBanner({required this.message});
+  const _ValidationBanner({required this.message, required this.isSuccess});
 
   final String message;
+  final bool isSuccess;
 
   @override
   Widget build(BuildContext context) {
-    final isSuccess = message.contains('✓');
     final color = isSuccess ? AppColors.success : AppColors.danger;
     final icon = isSuccess ? Icons.check_circle_outline : Icons.error_outline;
 

@@ -2,26 +2,82 @@
 
 Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próximos Passos → Concluído**.
 
+> **Guardrail da API (regra do projeto):** a API vem pronta de outro sistema; o app
+> só **consome** o JSON servido. Nenhuma correção pode alterar o contrato que hoje
+> funciona — endpoint, parâmetro, formato de request ou corpo dos POST (incl. `imei: 7829`).
+> Mudanças de parsing são **apenas defensivas**: passam a tolerar variações (número
+> como string, campo ausente), mas o JSON atual continua lido de forma idêntica.
+
 ---
 
 ## 🔄 Em Andamento
 
-_(nada em curso)_
+- **[Lote 2] Código de barras / parse defensivo.** _(mudança só ADITIVA — o JSON atual continua lido igual)_
+  - Normalizar UPC-A(12)↔EAN-13(13) com zero à esquerda na comparação client-side
+    (`_buscarNaLista`), sem casar produtos diferentes.
+  - `InventarioItem.fromJson` e `TipoEtiqueta.fromJson` com parse seguro (número como
+    string, campo ausente, nulo) — hoje quebram com `TypeError`.
+  - `Produto.qtdEstoque` preservar `null` quando ausente (mostra "N/A" em vez de "0,00").
 
 ---
 
 ## 📋 Próximos Passos
 
-- **[P1] Corrigir filtro `?barcode=` no servidor da API.**
-  O endpoint `GET /api/produtos?barcode=<código>` **ignora o filtro** e devolve a
-  lista inteira (~11.640 produtos, ~2,4 MB) a cada consulta. Isso deixa a consulta
-  de preço lenta e pesada (ainda mais no coletor via Wi-Fi). O app já foi blindado
-  para não usar o valor errado (ver Concluído), mas a raiz está no servidor —
-  encaminhar para quem mantém a API. Quando corrigido, a consulta fica instantânea.
+Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
++ testes ao fim de cada. Ordem: bugs de dados → polimento.
+
+- **[P0] Lote 3 — Corridas e estado nas telas.** Renumeração por maior número (não `length`);
+  corrida que apaga etiquetas salvas; resposta atrasada sobrescrevendo produto na consulta;
+  `mounted` em postFrameCallback.
+- **[P1] Lote 4 — Services (cache/licença/scanner).** Invalidar cache ao trocar servidor;
+  não regenerar licença em falha transitória de leitura; scanner `.first` → `firstOrNull`;
+  URL de licença por `Uri` seguro.
+- **[P1] Lote 5 — Mensagens amigáveis + encoding.** Função central que traduz erro
+  (rede/timeout/401/500/JSON) em português; corrigir mojibake ("nÃ£o"/"licenÃ§a"/"inventÃ¡rio").
+- **[P1] Lote 6 — UX + navegação.** Navegação Home→Config duplicando a Home; back do sistema
+  na Home; snackbar limpar anterior + não ser cortado pela navegação; áreas de toque + tooltip;
+  cores fixas → tema.
+- **[P2] Lote 7 — Robustez do app.** Captura global de erro (`runZonedGuarded`/`FlutterError.onError`);
+  `network_security_config.xml` p/ cleartext (rede local); rota `default` do `onGenerateRoute`;
+  mover `setUnauthorizedHandler` para fora do `build()`.
+- **[P2] Lote 8 — Qualidade/consistência.** Remover dead code (`buscarProduto` não-FV,
+  `sincronizar`, factories não usados); `IntrinsicHeight`→layout leve; `_build...()`→widget;
+  lints estritos; versões de deps; retry cobrir 5xx (GET).
+- **[P2] Lote 9 — Testes.** Widget tests (Splash/Config/Coleta); teste do `ConfigProvider`;
+  teste do retry/backoff; corrigir teste enganoso "API não configurada"; testar redação do
+  `LoggerService` e `StorageService`.
+
+### Mitigação sem backend (decidir ao chegar no lote)
+- **Duplicação de POST em timeout:** deixar de reenviar POST automaticamente em timeout
+  (só no cliente, não muda o envio). Trade-off: evita gravar 2x, mas exige o usuário reenviar
+  se realmente cair. Alinhar antes de aplicar.
+
+### Fora de escopo (dependem do backend — não temos acesso)
+- Autenticação por requisição (anexar licença/token às escritas). **Descartado.**
+- Dedup no backend por UUID. **Descartado** (fica só a mitigação de cliente acima).
+- Trocar/remover `imei: 7829`. **Não tocar** (faz parte do POST que funciona).
+
+### Pendências de decisão do usuário
+- Tela **Entrada** está implementada e roteada (`/entrada`) mas **sem botão** na navegação —
+  é intencional (feature pausada) ou faltou o acesso na Home?
+
+### Pendência externa (backend)
+- **[P1] Filtro `?barcode=` no servidor da API.** `GET /api/produtos?barcode=<código>`
+  ignora o filtro e devolve a lista inteira (~11.640 itens, ~2,4 MB). O app já filtra no
+  cliente (blindado); a raiz é no servidor. Encaminhar a quem mantém a API.
 
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 1] Configuração: gate de `isConfigured` + mensagem única.** — 2026-08-01
+  `isConfigured` só grava `true` após validar conexão/licença (`saveConfig` ganhou
+  `markConfigured`; o teste salva `false`, só o botão Salvar grava `true`) — antes o app
+  liberava telas com servidor nunca validado. Banner de status unificado (removido o 2º
+  banner que repetia `configProvider.errorMessage` — bug do print) e snackbar de sucesso
+  redundante removido. Banner decide cor/ícone por tipo (`isSuccess`), não mais pelo `✓`;
+  glifos `✓/✗` retirados do texto (o ícone Material já comunica). Só `config_provider.dart`
+  + `config_screen.dart`, zero contato com a API. Validado: `flutter analyze` limpo, 101 testes.
 
 - [x] **Fix: "Valor Ult. Compra" errado na Consulta de Preço.** — 2026-07-31
   O endpoint `/api/produtos?barcode=` retorna a lista inteira ignorando o filtro,
