@@ -244,8 +244,8 @@ class ApiService {
       try {
         final codBarras = item['cod_barras'];
         if (codBarras == null) continue;
-        if (BarcodeUtils.sanitize(codBarras.toString()) ==
-            BarcodeUtils.sanitize(codigoBarras)) {
+        if (BarcodeUtils.normalizeForCompare(codBarras.toString()) ==
+            BarcodeUtils.normalizeForCompare(codigoBarras)) {
           LoggerService.d('PRODUTO ENCONTRADO no item $itemsProcessados!');
           return item;
         }

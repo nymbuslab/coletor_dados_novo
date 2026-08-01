@@ -12,12 +12,13 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 2] Código de barras / parse defensivo.** _(mudança só ADITIVA — o JSON atual continua lido igual)_
-  - Normalizar UPC-A(12)↔EAN-13(13) com zero à esquerda na comparação client-side
-    (`_buscarNaLista`), sem casar produtos diferentes.
-  - `InventarioItem.fromJson` e `TipoEtiqueta.fromJson` com parse seguro (número como
-    string, campo ausente, nulo) — hoje quebram com `TypeError`.
-  - `Produto.qtdEstoque` preservar `null` quando ausente (mostra "N/A" em vez de "0,00").
+- **[Lote 3] Corridas e estado nas telas.** _(só telas/estado, zero API)_
+  - Renumeração de item por maior número existente, não `length` (`coleta_screen`) —
+    evita número duplicado após remover item do meio e reabrir.
+  - Corrida que apaga etiquetas salvas ao abrir vindo da Consulta de Preço
+    (`etiqueta_screen`: aguardar carregar antes de adicionar).
+  - Resposta assíncrona atrasada sobrescrevendo produto atual na Consulta de Preço.
+  - `mounted` antes de `setState` em `addPostFrameCallback` (`etiqueta_screen`).
 
 ---
 
@@ -26,9 +27,6 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P0] Lote 3 — Corridas e estado nas telas.** Renumeração por maior número (não `length`);
-  corrida que apaga etiquetas salvas; resposta atrasada sobrescrevendo produto na consulta;
-  `mounted` em postFrameCallback.
 - **[P1] Lote 4 — Services (cache/licença/scanner).** Invalidar cache ao trocar servidor;
   não regenerar licença em falha transitória de leitura; scanner `.first` → `firstOrNull`;
   URL de licença por `Uri` seguro.
@@ -69,6 +67,13 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 2] Código de barras / parse defensivo.** — 2026-08-01
+  `BarcodeUtils.normalizeForCompare` (UPC-A 12 díg. → EAN-13 com zero à esquerda, canônico)
+  usado em `_buscarNaLista` — leitor de 12 díg. passa a casar com base de 13. `InventarioItem.fromJson`
+  e `TipoEtiqueta.fromJson` com parse defensivo (número como string/nulo/ausente não quebra mais).
+  `Produto.qtdEstoque` preserva `null` → "N/A" quando a API não manda o campo. Tudo aditivo (JSON
+  atual lido igual). Validado: `flutter analyze` limpo, 101 testes.
 
 - [x] **[Lote 1] Configuração: gate de `isConfigured` + mensagem única.** — 2026-08-01
   `isConfigured` só grava `true` após validar conexão/licença (`saveConfig` ganhou

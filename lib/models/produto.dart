@@ -54,7 +54,8 @@ class Produto {
       dataHoraRequisicao: DateTime.now(),
       numeroItem: numeroItem,
       dataAtualizacao: json['data_atualizacao']?.toString(),
-      qtdEstoque: parseDouble(json['qtd_estoque']),
+      qtdEstoque:
+          json['qtd_estoque'] != null ? parseDouble(json['qtd_estoque']) : null,
       tipoEtiqueta: json['tipo_etiqueta']?.toString(),
       valorCompra: json['valor_compra'] != null ? parseDouble(json['valor_compra']) : null,
     );
@@ -141,8 +142,8 @@ class TipoEtiqueta {
   factory TipoEtiqueta.fromJson(Map<String, dynamic> json) {
     return TipoEtiqueta(
       id: json['codigo']?.toString() ?? '', // API usa 'codigo'
-      nome: json['etiqueta'] ?? '', // API usa 'etiqueta'
-      descricao: json['arquivo'] ?? '', // API usa 'arquivo'
+      nome: json['etiqueta']?.toString() ?? '', // API usa 'etiqueta'
+      descricao: json['arquivo']?.toString() ?? '', // API usa 'arquivo'
     );
   }
 

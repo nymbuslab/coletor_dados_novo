@@ -42,16 +42,32 @@ class InventarioItem {
 
   // Criação a partir de JSON (se necessário)
   factory InventarioItem.fromJson(Map<String, dynamic> json, int itemNumber) {
+    // Parse defensivo: tolera número vindo como string, nulo ou ausente
+    // (a API é inconsistente de tipos). Para o JSON atual, resultado idêntico.
+    int parseInt(dynamic v) {
+      if (v is int) return v;
+      if (v is double) return v.toInt();
+      if (v is String) return int.tryParse(v.trim()) ?? 0;
+      return 0;
+    }
+
+    double parseDouble(dynamic v) {
+      if (v is double) return v;
+      if (v is int) return v.toDouble();
+      if (v is String) return double.tryParse(v.replaceAll(',', '.')) ?? 0.0;
+      return 0.0;
+    }
+
     return InventarioItem(
       item: itemNumber,
-      codigo: json['codigo'] ?? 0,
+      codigo: parseInt(json['codigo']),
       barras: BarcodeUtils.sanitize((json['barras'] ?? '').toString()),
-      produto: json['produto'] ?? '',
-      unidade: json['un'] ?? '',
-      estoqueAtual: (json['estoque_atual'] ?? 0.0).toDouble(),
-      novoEstoque: (json['qtd'] ?? 0.0).toDouble(),
+      produto: (json['produto'] ?? '').toString(),
+      unidade: (json['un'] ?? '').toString(),
+      estoqueAtual: parseDouble(json['estoque_atual']),
+      novoEstoque: parseDouble(json['qtd']),
       dtCriacao: json['dt_criacao'] != null
-          ? DateTime.tryParse(json['dt_criacao']) ?? DateTime.now()
+          ? DateTime.tryParse(json['dt_criacao'].toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }
