@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nymbus_coletor/core/theme/app_theme.dart';
 
 /// Estado vazio padronizado para listas e telas sem conteúdo.
 ///
@@ -17,7 +18,7 @@ class EmptyState extends StatelessWidget {
     required this.icon,
     required this.title,
     this.subtitle,
-    this.color = Colors.grey,
+    this.color = AppColors.inkMuted,
   });
 
   final IconData icon;
@@ -50,14 +51,14 @@ class EmptyState extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 title,
-                style: tt.titleMedium!.copyWith(color: Colors.grey[600]),
+                style: tt.titleMedium!.copyWith(color: AppColors.ink),
                 textAlign: TextAlign.center,
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   subtitle!,
-                  style: tt.bodyMedium!.copyWith(color: Colors.grey[500]),
+                  style: tt.bodyMedium!.copyWith(color: AppColors.inkMuted),
                   textAlign: TextAlign.center,
                 ),
               ],
