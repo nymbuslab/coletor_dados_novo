@@ -204,6 +204,65 @@ void main() {
     });
   });
 
+  group('ApiService.buscarProdutoPorBarcode', () {
+    // Regressão: o servidor pode ignorar o filtro ?barcode= e devolver a lista
+    // inteira. O método deve filtrar pelo cod_barras e NÃO pegar o primeiro item.
+    test('filtra pelo cod_barras quando servidor devolve a lista inteira', () async {
+      final produtos = [
+        {
+          'cod_barras': '78907874',
+          'produto': 'OLEO CORPORAL PAIXAO 200ML',
+          'valor_compra': 14.44,
+        },
+        {
+          'cod_barras': '7897186005683',
+          'produto': 'ABRACADEIRA NYLON WESTERN 2.5X100MM PRETA',
+          'valor_compra': 2.70,
+        },
+      ];
+      final client = MockClient(
+        (_) async => http.Response(jsonEncode(produtos), 200),
+      );
+      final svc = _makeService(client);
+
+      final result = await svc.buscarProdutoPorBarcode('7897186005683');
+      expect(result, isNotNull);
+      expect(result!['produto'], 'ABRACADEIRA NYLON WESTERN 2.5X100MM PRETA');
+      expect(result['valor_compra'], 2.70); // não pode ser o 14.44 do 1º item
+    });
+
+    test('retorna o objeto direto quando servidor responde um único produto', () async {
+      final produto = {'cod_barras': '7897186005683', 'valor_compra': 2.70};
+      final client = MockClient(
+        (_) async => http.Response(jsonEncode(produto), 200),
+      );
+      final svc = _makeService(client);
+
+      final result = await svc.buscarProdutoPorBarcode('7897186005683');
+      expect(result, isNotNull);
+      expect(result!['valor_compra'], 2.70);
+    });
+
+    test('retorna null quando o código não está na lista', () async {
+      final produtos = [
+        {'cod_barras': '78907874', 'valor_compra': 14.44},
+      ];
+      final client = MockClient(
+        (_) async => http.Response(jsonEncode(produtos), 200),
+      );
+      final svc = _makeService(client);
+
+      final result = await svc.buscarProdutoPorBarcode('7897186005683');
+      expect(result, isNull);
+    });
+
+    test('retorna null para status 404', () async {
+      final client = MockClient((_) async => http.Response('', 404));
+      final svc = _makeService(client);
+      expect(await svc.buscarProdutoPorBarcode('123'), isNull);
+    });
+  });
+
   group('ApiService.buscarTiposEtiquetas', () {
     test('retorna lista de etiquetas', () async {
       final etiquetas = [

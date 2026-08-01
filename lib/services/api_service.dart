@@ -328,7 +328,12 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data is Map<String, dynamic>) return data;
-        if (data is List && data.isNotEmpty) return data.first as Map<String, dynamic>;
+        if (data is List) {
+          // O servidor pode ignorar o filtro ?barcode= e devolver a lista
+          // inteira. Filtramos pelo cod_barras para não retornar o primeiro
+          // item da lista (produto errado). Retorna null se não encontrar.
+          return _buscarNaLista(data, codigoBarras);
+        }
         return null;
       } else if (response.statusCode == 404) {
         return null;
