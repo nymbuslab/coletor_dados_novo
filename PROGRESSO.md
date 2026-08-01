@@ -18,12 +18,9 @@ _(nada no momento)_
 
 ## 📋 Próximos Passos
 
-Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
-+ testes ao fim de cada. Ordem: bugs de dados → polimento.
-
-- **[P2] Lote 9B — Widget tests.** Splash/Config/Coleta. Ficaram fora do Lote 9 (que cobriu os
-  unit tests) por serem os mais frágeis: timers de navegação, scaffolding de Provider + rotas +
-  mocks de tela. Rodam na VM de teste (não precisam de device).
+Remediação da auditoria geral (2026-07-31/08-01) **concluída** — todos os lotes (1–9 + 9B)
+em ✅ Concluído. Restam apenas pendências de decisão/device e a pendência externa de backend,
+listadas abaixo.
 
 ### Mitigação sem backend (decidir ao chegar no lote)
 - **Duplicação de POST em timeout:** deixar de reenviar POST automaticamente em timeout
@@ -54,6 +51,14 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 9B] Widget tests.** — 2026-08-01 (`0038cd7`) — 117 → 126 testes
+  Splash/Config/Coleta na VM de teste (sem device). **Splash:** decisão de navegação
+  (→`/config` não configurado, →`/login` configurado) com Storage/Api mockados e rotas-marcador.
+  **Config:** render, validação de campos vazios, botão Salvar desabilitado até conectar, e fluxo
+  testar-conexão com sucesso (banner de licença válida — usa `ensureVisible` porque o botão fica
+  abaixo da dobra). **Coleta:** estado vazio, render de itens via `onCarregarItens`, aviso de
+  código vazio. Validado: `flutter analyze` limpo, 126 testes.
 
 - [x] **[Lote 9] Testes (unit).** — 2026-08-01 _(4 commits)_ — 88 → 117 testes
   **`LoggerService`** (`cc38d55`): redação de licença/barras/URL/`Authorization: Bearer`,
