@@ -61,20 +61,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Icon(
                           Icons.inventory_2,
                           size: 64,
-                          color: AppColors.seed,
+                          color: AppColors.action,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'Coletor de Dados',
                           style: tt.headlineMedium!.copyWith(
-                            color: AppColors.seed,
+                            color: AppColors.ink,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Licença: ${configProvider.config.licenca}',
                           style: tt.bodyMedium!.copyWith(
-                            color: Colors.grey[600],
+                            color: AppColors.inkMuted,
                             letterSpacing: 1,
                           ),
                         ),
@@ -84,20 +84,23 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.orange[100],
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.orange),
+                              color: AppColors.warning.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.warning),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.warning, color: Colors.orange[700]),
+                                const Icon(
+                                  Icons.warning,
+                                  color: AppColors.warning,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Configure o aplicativo antes de acessar',
                                     style: tt.bodyMedium!.copyWith(
-                                      color: Colors.orange[700],
-                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.warning,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
@@ -107,7 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (!configProvider.config.isConfigured)
                           const SizedBox(height: 24),
 
-                        // Botão Acessar
+                        // Botão Acessar — pílula do tema; loading mantém o
+                        // ElevatedButton (AppPillButton não cobre esse estado).
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -117,11 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? _acessar
                                 : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.seed,
+                              backgroundColor: AppColors.action,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              disabledBackgroundColor: Colors.grey[300],
-                              disabledForegroundColor: Colors.grey[600],
+                              disabledBackgroundColor: AppColors.border,
+                              disabledForegroundColor: AppColors.inkMuted,
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -139,16 +142,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Botão Configurações
+                        // Botão Configurações — pílula-fantasma do tema.
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton(
                             onPressed: _goToConfig,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.seed,
-                              side: const BorderSide(color: AppColors.seed),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                            ),
                             child: const Text('Configurações'),
                           ),
                         ),
