@@ -21,8 +21,6 @@ _(nada no momento)_
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P2] Lote 8.3 — Deps.** Revisar `intl 0.20.2` e `mobile_scanner 7.1.2` (pinados) e
-  demais versões; decidir bumps com changelog. Isolado por ser risco/ruído próprio.
 - **[P2] Lote 9 — Testes.** Widget tests (Splash/Config/Coleta); teste do `ConfigProvider`;
   teste do retry/backoff; corrigir teste enganoso "API não configurada"; testar redação do
   `LoggerService` e `StorageService`.
@@ -46,9 +44,24 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
   ignora o filtro e devolve a lista inteira (~11.640 itens, ~2,4 MB). O app já filtra no
   cliente (blindado); a raiz é no servidor. Encaminhar a quem mantém a API.
 
+### Pendência de validação em device
+- **[P2] `flutter_secure_storage` 9 → 10 (major).** Segurado no Lote 8.3 por ser breaking
+  e guardar a licença do dispositivo (muda API/plugins Android). Fazer só com device em mãos:
+  revisar migração da v10 e conferir que a licença já gravada nos aparelhos sobrevive ao update.
+- **[P2] Revalidar leitura de código de barras.** `mobile_scanner` foi para 7.4.0 sem teste
+  em device; confirmar em campo que a câmera/scanner segue lendo normalmente.
+
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 8.3] Deps.** — 2026-08-01 (`0abc18f`)
+  Revisadas as 3 dependências diretas atrasadas. **`intl` 0.20.2 → 0.20.3** (patch) e
+  **`mobile_scanner` 7.1.2 → 7.4.0** (minor no v7, não-breaking) bumpados. **`flutter_secure_storage`
+  9 → 10 segurado** de propósito (major/breaking, guarda a licença — precisa de device; ver
+  Pendência de validação em device). `test` (dev) fica travado pela constraint do Flutter SDK.
+  Validado: `flutter pub get` ok, `flutter analyze` limpo, 88 testes. Leitura do scanner não
+  validada em device.
 
 - [x] **[Lote 8.2] Extrair sub-widgets.** — 2026-08-01 _(3 commits)_
   Três métodos `_build*` que retornavam `Widget` viraram `StatelessWidget` próprios,
