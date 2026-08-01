@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Selecione uma operação para começar',
-                      style: tt.bodyMedium!.copyWith(color: Colors.grey[600]),
+                      style: tt.bodyMedium!.copyWith(color: AppColors.inkMuted),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
@@ -139,7 +139,7 @@ class _ActionCard extends StatelessWidget {
     return Card(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -148,7 +148,7 @@ class _ActionCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: color, size: 28),
               ),
@@ -161,13 +161,13 @@ class _ActionCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       description,
-                      style: tt.bodySmall!.copyWith(color: Colors.grey[600]),
+                      style: tt.bodySmall!.copyWith(color: AppColors.inkMuted),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
+              const Icon(Icons.chevron_right, color: AppColors.inkMuted),
             ],
           ),
         ),
