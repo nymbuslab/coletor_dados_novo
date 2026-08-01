@@ -21,9 +21,9 @@ _(nada no momento)_
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P2] Lote 9 — Testes.** Widget tests (Splash/Config/Coleta); teste do `ConfigProvider`;
-  teste do retry/backoff; corrigir teste enganoso "API não configurada"; testar redação do
-  `LoggerService` e `StorageService`.
+- **[P2] Lote 9B — Widget tests.** Splash/Config/Coleta. Ficaram fora do Lote 9 (que cobriu os
+  unit tests) por serem os mais frágeis: timers de navegação, scaffolding de Provider + rotas +
+  mocks de tela. Rodam na VM de teste (não precisam de device).
 
 ### Mitigação sem backend (decidir ao chegar no lote)
 - **Duplicação de POST em timeout:** deixar de reenviar POST automaticamente em timeout
@@ -54,6 +54,17 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 9] Testes (unit).** — 2026-08-01 _(4 commits)_ — 88 → 117 testes
+  **`LoggerService`** (`cc38d55`): redação de licença/barras/URL/`Authorization: Bearer`,
+  inclusive a aplicada na saída (captura de `debugPrint`). **`StorageService`** (`6bd27a3`):
+  com `FakeSecureStorage`, licença gravada só no secure (não em prefs), round-trip do config,
+  `loadOrCreateLicense` retorna vazio sem sobrescrever em falha transitória de leitura (blindagem
+  do Lote 4), filtro de etiquetas inválidas. **`ConfigProvider`** (`ef47a20`): `init`, `saveConfig`
+  (notifica listeners), `validarLicenca('')` sem chamar API, `testarConectividade`. **`ApiService`
+  retry/backoff** (`b7deca9`): GET re-tenta 5xx e erro de rede; **POST não re-tenta 5xx** (evita
+  gravação dupla); reescrito o teste enganoso "API não configurada". Widget tests → Lote 9B.
+  Validado: `flutter analyze` limpo, 117 testes.
 
 - [x] **[Lote 8.3] Deps.** — 2026-08-01 (`0abc18f`)
   Revisadas as 3 dependências diretas atrasadas. **`intl` 0.20.2 → 0.20.3** (patch) e
