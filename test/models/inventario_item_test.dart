@@ -52,50 +52,6 @@ void main() {
     });
   });
 
-  group('InventarioItem.fromJson', () {
-    test('deserializa campos corretamente', () {
-      final json = {
-        'codigo': 200,
-        'barras': '1234567890123',
-        'produto': 'Feijão',
-        'un': 'KG',
-        'estoque_atual': 30.0,
-        'qtd': 35.5,
-        'dt_criacao': '2025-06-15T14:30:00',
-      };
-      final item = InventarioItem.fromJson(json, 2);
-
-      expect(item.item, 2);
-      expect(item.codigo, 200);
-      expect(item.barras, '1234567890123');
-      expect(item.produto, 'Feijão');
-      expect(item.unidade, 'KG');
-      expect(item.estoqueAtual, 30.0);
-      expect(item.novoEstoque, 35.5);
-    });
-
-    test('campos ausentes usam valores padrão', () {
-      final item = InventarioItem.fromJson({}, 1);
-      expect(item.codigo, 0);
-      expect(item.barras, '');
-      expect(item.produto, '');
-      expect(item.unidade, '');
-      expect(item.estoqueAtual, 0.0);
-      expect(item.novoEstoque, 0.0);
-    });
-
-    test('dt_criacao inválido usa DateTime.now()', () {
-      final before = DateTime.now();
-      final item = InventarioItem.fromJson({'dt_criacao': 'invalido'}, 1);
-      final after = DateTime.now();
-      expect(
-        item.dtCriacao.isAfter(before.subtract(const Duration(seconds: 1))),
-        true,
-      );
-      expect(item.dtCriacao.isBefore(after.add(const Duration(seconds: 1))), true);
-    });
-  });
-
   group('InventarioItem.validate', () {
     test('item válido retorna lista vazia', () {
       expect(makeItem().validate(), isEmpty);
@@ -126,19 +82,6 @@ void main() {
         makeItem(novoEstoque: -1.0).validate(),
         contains('novoEstoque negativo'),
       );
-    });
-  });
-
-  group('InventarioItem.copyWith', () {
-    test('atualiza apenas campos especificados', () {
-      final original = makeItem();
-      final copy = original.copyWith(novoEstoque: 99.0, unidade: 'KG');
-
-      expect(copy.novoEstoque, 99.0);
-      expect(copy.unidade, 'KG');
-      expect(copy.codigo, original.codigo);
-      expect(copy.barras, original.barras);
-      expect(copy.produto, original.produto);
     });
   });
 
@@ -182,30 +125,6 @@ void main() {
       final req = InventarioRequest(coleta: 'ENTRADA', itens: [makeItem()]);
       final json = req.toJson();
       expect(json['coleta'], 'ENTRADA');
-    });
-
-    test('fromJson round-trip mantém dados', () {
-      final original = InventarioRequest(
-        coleta: 'INVENTARIO',
-        imei: 1234,
-        itens: [makeItem(dtCriacao: dtFixa)],
-      );
-      final json = original.toJson();
-
-      // Ajusta dt_criacao para formato ISO aceito pelo fromJson
-      final itensList = json['itens'] as List;
-      itensList[0]['dt_criacao'] = dtFixa.toIso8601String();
-
-      final restored = InventarioRequest.fromJson(json);
-      expect(restored.coleta, original.coleta);
-      expect(restored.imei, original.imei);
-      expect(restored.itens.length, 1);
-      expect(restored.itens.first.codigo, original.itens.first.codigo);
-    });
-
-    test('fromJson com itens nulos retorna lista vazia', () {
-      final req = InventarioRequest.fromJson({'coleta': 'INVENTARIO'});
-      expect(req.itens, isEmpty);
     });
   });
 }

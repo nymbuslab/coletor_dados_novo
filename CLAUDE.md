@@ -98,7 +98,7 @@ lib/
 ├── core/
 │   ├── theme/       # AppColors, ThemeData
 │   └── widgets/     # compartilhados (EmptyState, StatusBadge)
-├── models/          # AppConfig, Produto, EtiquetaColetor, InventarioItem, Licenca
+├── models/          # AppConfig, Produto, EtiquetaColetor, InventarioItem
 ├── providers/       # ConfigProvider (Provider/ChangeNotifier)
 ├── services/        # ApiService, StorageService, LicenseService,
 │                    # ScannerService, FeedbackService, LoggerService

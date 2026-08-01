@@ -88,34 +88,6 @@ void main() {
     });
   });
 
-  group('EtiquetaColetor.fromJson', () {
-    test('deserializa campos corretamente', () {
-      final json = {
-        'ETQ_IDX': 10,
-        'ETQ_ID': 5,
-        'LOTE_ID': 1,
-        'ETQ_CODMAT': '001',
-        'ETQ_QTD': 3,
-        'ETQ_EAN13': '7891234567890',
-        'ETQ_DTHORA': '15/06/2025 10:30:00',
-        'ETQ_DESC': 'Arroz',
-        'ETQ_UN': 'UN',
-        'LAYETQ_TEXT': 'GONDOLA GRANDE',
-        'gr7_status': 'A',
-      };
-      final etq = EtiquetaColetor.fromJson(json);
-
-      expect(etq.etqIdx, 10);
-      expect(etq.etqId, 5);
-      expect(etq.loteId, 1);
-      expect(etq.etqCodmat, '001');
-      expect(etq.etqQtd, 3);
-      expect(etq.etqEan13, '7891234567890');
-      expect(etq.etqDesc, 'Arroz');
-      expect(etq.gr7Status, 'A');
-    });
-  });
-
   group('EtiquetaColetor.toString', () {
     test('inclui campos principais', () {
       final etq = EtiquetaColetor(

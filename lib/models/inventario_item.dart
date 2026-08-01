@@ -40,61 +40,6 @@ class InventarioItem {
     };
   }
 
-  // Criação a partir de JSON (se necessário)
-  factory InventarioItem.fromJson(Map<String, dynamic> json, int itemNumber) {
-    // Parse defensivo: tolera número vindo como string, nulo ou ausente
-    // (a API é inconsistente de tipos). Para o JSON atual, resultado idêntico.
-    int parseInt(dynamic v) {
-      if (v is int) return v;
-      if (v is double) return v.toInt();
-      if (v is String) return int.tryParse(v.trim()) ?? 0;
-      return 0;
-    }
-
-    double parseDouble(dynamic v) {
-      if (v is double) return v;
-      if (v is int) return v.toDouble();
-      if (v is String) return double.tryParse(v.replaceAll(',', '.')) ?? 0.0;
-      return 0.0;
-    }
-
-    return InventarioItem(
-      item: itemNumber,
-      codigo: parseInt(json['codigo']),
-      barras: BarcodeUtils.sanitize((json['barras'] ?? '').toString()),
-      produto: (json['produto'] ?? '').toString(),
-      unidade: (json['un'] ?? '').toString(),
-      estoqueAtual: parseDouble(json['estoque_atual']),
-      novoEstoque: parseDouble(json['qtd']),
-      dtCriacao: json['dt_criacao'] != null
-          ? DateTime.tryParse(json['dt_criacao'].toString()) ?? DateTime.now()
-          : DateTime.now(),
-    );
-  }
-
-  // Método copyWith para criar cópias com modificações
-  InventarioItem copyWith({
-    int? item,
-    int? codigo,
-    String? barras,
-    String? produto,
-    String? unidade,
-    double? estoqueAtual,
-    double? novoEstoque,
-    DateTime? dtCriacao,
-  }) {
-    return InventarioItem(
-      item: item ?? this.item,
-      codigo: codigo ?? this.codigo,
-      barras: barras ?? this.barras,
-      produto: produto ?? this.produto,
-      unidade: unidade ?? this.unidade,
-      estoqueAtual: estoqueAtual ?? this.estoqueAtual,
-      novoEstoque: novoEstoque ?? this.novoEstoque,
-      dtCriacao: dtCriacao ?? this.dtCriacao,
-    );
-  }
-
   // Validação sistemática do modelo
   List<String> validate() {
     final errors = <String>[];
@@ -159,21 +104,5 @@ class InventarioRequest {
       'imei': imei,
       'itens': itens.map((item) => item.toJson()).toList(),
     };
-  }
-
-  factory InventarioRequest.fromJson(Map<String, dynamic> json) {
-    return InventarioRequest(
-      coleta: json['coleta'] ?? 'INVENTARIO',
-      imei: json['imei'] ?? 7829,
-      itens:
-          (json['itens'] as List<dynamic>?)
-              ?.asMap()
-              .entries
-              .map(
-                (entry) => InventarioItem.fromJson(entry.value, entry.key + 1),
-              )
-              .toList() ??
-          [],
-    );
   }
 }

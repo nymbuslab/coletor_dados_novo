@@ -126,41 +126,6 @@ class ConfigProvider extends ChangeNotifier {
     }
   }
 
-  /// Sincroniza configuração (testa conectividade e valida licença)
-  Future<bool> sincronizar() async {
-    _setLoading(true);
-    try {
-      // Primeiro testa conectividade com a licença real
-      final isConnected = await ApiService.instance.testarConectividade(
-        _config.licenca,
-      );
-      if (!isConnected) {
-        _setError(
-          'Não foi possível conectar com o servidor. Verifique o endereço e porta.',
-        );
-        return false;
-      }
-
-      // Valida a licença (API retorna apenas OK se válida)
-      final isValid = await ApiService.instance.validarLicencaSimples(
-        _config.licenca,
-      );
-      if (!isValid) {
-        _setError('Licença inválida');
-        return false;
-      }
-
-      _clearError();
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _setError('Erro na sincronização: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
   /// Limpa a configuração
   Future<void> clearConfig() async {
     await StorageService.clearConfig();

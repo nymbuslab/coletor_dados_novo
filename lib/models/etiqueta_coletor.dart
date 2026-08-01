@@ -84,27 +84,6 @@
     };
   }
 
-  // Criar a partir de JSON
-  factory EtiquetaColetor.fromJson(Map<String, dynamic> json) {
-    return EtiquetaColetor(
-      etqIdx: json['ETQ_IDX'],
-      etqId: json['ETQ_ID'],
-      loteId: json['LOTE_ID'],
-      etqCodmat: json['ETQ_CODMAT'],
-      etqQtd: json['ETQ_QTD'],
-      etqEan13: json['ETQ_EAN13'],
-      etqDthora: json['ETQ_DTHORA'],
-      etqDesc: json['ETQ_DESC'],
-      etqPosicao: json['ETQ_POSICAO'],
-      etqVal: json['ETQ_VAL'],
-      etqUn: json['ETQ_UN'],
-      etqPreco: json['ETQ_PRECO'],
-      layetqText: json['LAYETQ_TEXT'],
-      gr7Status: json['gr7_status'],
-      gr7DataHora: json['gr7_data_hora'],
-    );
-  }
-
   @override
   String toString() {
     return 'EtiquetaColetor(etqCodmat: $etqCodmat, etqDesc: $etqDesc, etqQtd: $etqQtd, layetqText: $layetqText)';

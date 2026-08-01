@@ -268,59 +268,6 @@ class ApiService {
     return null;
   }
 
-  /// Busca dados do produto por código de barras
-  Future<Map<String, dynamic>?> buscarProduto(String codigoBarras) async {
-    if (!isConfigured) throw Exception('API não configurada');
-    try {
-      const cacheKey = 'produtos';
-      final codigoSan = BarcodeUtils.sanitize(codigoBarras);
-      LoggerService.d('Código de barras procurado: "${LoggerService.maskBarcode(codigoSan)}"');
-
-      if (_cacheValido(cacheKey)) {
-        LoggerService.d('Cache hit /produtos (${_produtosCache[cacheKey]!.length} itens)');
-        return _buscarNaLista(_produtosCache[cacheKey]!, codigoBarras);
-      }
-
-      final url = Uri.parse('$_baseUrl/produtos');
-      LoggerService.d('Buscando todos os produtos com: ${LoggerService.redactUrl(url.toString())}');
-      final response = await _get(url, timeout: _timeoutLong);
-      LoggerService.d('Busca geral - Status: ${response.statusCode}');
-      if (response.statusCode == 200) {
-        LoggerService.d('Tamanho da resposta: ${response.body.length} caracteres');
-        try {
-          final data = jsonDecode(response.body);
-          if (data is List) {
-            LoggerService.d('Total de produtos recebidos: ${data.length}');
-            _produtosCache[cacheKey] = data;
-            _cacheTimestamp[cacheKey] = DateTime.now();
-            final produto = _buscarNaLista(data, codigoBarras);
-            if (produto != null) return produto;
-            LoggerService.i('Produto com código "${LoggerService.maskBarcode(codigoBarras)}" não encontrado');
-            return null;
-          } else if (data is Map<String, dynamic>) {
-            return data;
-          } else {
-            throw Exception('Formato de resposta inválido');
-          }
-        } catch (e) {
-          if (e is FormatException) throw Exception('Erro de formato na resposta da API');
-          rethrow;
-        }
-      } else if (response.statusCode == 404) {
-        LoggerService.i('Produto não encontrado (404)');
-        return null;
-      } else {
-        throw Exception('Erro do servidor: ${response.statusCode}');
-      }
-    } catch (e) {
-      LoggerService.e('Erro detalhado na busca do produto: $e');
-      final msg = e.toString();
-      if (msg.contains('TimeoutException')) throw Exception('Timeout na busca do produto. Tente novamente.');
-      if (msg.contains('FormatException')) throw Exception('Erro no formato dos dados da API.');
-      throw Exception('Erro ao buscar produto: $e');
-    }
-  }
-
   /// Busca um produto pelo barcode usando o endpoint individual (?barcode=)
   /// Retorna o produto com todos os campos, incluindo valor_compra.
   Future<Map<String, dynamic>?> buscarProdutoPorBarcode(String codigoBarras) async {
