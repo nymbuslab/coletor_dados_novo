@@ -12,7 +12,14 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-_(nada no momento)_
+- **[Lote 8.2] Extrair sub-widgets — em andamento (1 de 3).**
+  - [x] `_buildInfoRow` → widget `const` `_InfoRow` (`8d0c0db`).
+  - [ ] `_buildItemCard` ([coleta:397](lib/screens/coleta_screen.dart#L397)) → widget `const`
+    (usa `widget.corPrimaria`, `_editarItem`/`_removerItem`, `_formatarQuantidade` — passar
+    como parâmetros/callbacks).
+  - [ ] `_buildProdutoCard` ([etiqueta:520](lib/screens/etiqueta_screen.dart#L520)) → widget
+    `const` (usa `AppColors.etiqueta`, `_removerProduto`, `_tipoEtiquetaGlobal`).
+  - Sensível a render — idealmente validar em device.
 
 ---
 
@@ -21,11 +28,6 @@ _(nada no momento)_
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P2] Lote 8.2 — Extrair sub-widgets.** Converter `_buildItemCard`
-  ([coleta:397](lib/screens/coleta_screen.dart#L397)), `_buildProdutoCard`
-  ([etiqueta:520](lib/screens/etiqueta_screen.dart#L520)) e `_buildInfoRow`
-  ([consulta_preco:313](lib/screens/consulta_preco_screen.dart#L313)) em widgets `const`
-  (convenção do projeto). Sensível a render — idealmente validar em device.
 - **[P2] Lote 8.3 — Deps.** Revisar `intl 0.20.2` e `mobile_scanner 7.1.2` (pinados) e
   demais versões; decidir bumps com changelog. Isolado por ser risco/ruído próprio.
 - **[P2] Lote 9 — Testes.** Widget tests (Splash/Config/Coleta); teste do `ConfigProvider`;
