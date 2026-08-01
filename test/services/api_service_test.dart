@@ -94,16 +94,15 @@ void main() {
       expect(() => svc.validarLicenca('LIC-001'), throwsException);
     });
 
-    test('lança exceção quando API não está configurada', () async {
-      // Força estado não configurado resetando via configure com string vazia
-      // Como o singleton mantém estado, usamos validarLicenca sem configure
-      final svc = ApiService.instance;
-      // Reconfigura para URL válida, depois criamos nova instância fake sem configure
-      // Aqui testamos via validarLicencaSimples que não lança
-      final client = MockClient((_) async => throw http.ClientException('err'));
-      svc.setClient(client);
-      svc.configure('http://test.local');
-      expect(() => svc.validarLicenca(''), throwsException);
+    test('propaga exceção de rede após esgotar as retentativas', () async {
+      // Antes este teste se chamava "API não configurada", mas na prática
+      // configurava a URL e passava licença vazia — não testava o que dizia.
+      // Agora testa o comportamento real: erro de rede é propagado.
+      final client = MockClient(
+        (_) async => throw http.ClientException('offline'),
+      );
+      final svc = _makeService(client);
+      expect(() => svc.validarLicenca('LIC-001'), throwsException);
     });
   });
 
@@ -299,6 +298,47 @@ void main() {
 
       await svc.testarConectividade();
       expect(chamado, true);
+    });
+  });
+
+  group('ApiService retry/backoff', () {
+    test('GET re-tenta em 5xx e devolve a última resposta ao esgotar', () async {
+      var chamadas = 0;
+      final client = MockClient((_) async {
+        chamadas++;
+        return http.Response('', 500);
+      });
+      final svc = _makeService(client);
+
+      final ok = await svc.testarConectividade();
+      expect(ok, false); // status >= 500 → false
+      expect(chamadas, 4); // 1 tentativa + 3 retentativas
+    });
+
+    test('GET re-tenta erro de rede e sucede na tentativa seguinte', () async {
+      var chamadas = 0;
+      final client = MockClient((_) async {
+        chamadas++;
+        if (chamadas == 1) throw http.ClientException('offline');
+        return http.Response('ok', 200);
+      });
+      final svc = _makeService(client);
+
+      final ok = await svc.testarConectividade();
+      expect(ok, true);
+      expect(chamadas, 2);
+    });
+
+    test('POST não re-tenta em 5xx (evita gravação dupla)', () async {
+      var chamadas = 0;
+      final client = MockClient((_) async {
+        chamadas++;
+        return http.Response('', 500);
+      });
+      final svc = _makeService(client);
+
+      await expectLater(svc.enviarInventario([]), throwsException);
+      expect(chamadas, 1);
     });
   });
 }
