@@ -12,7 +12,24 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-_(nada no momento)_
+- **[Lote 8] Qualidade/consistência — em andamento (3 de 4 commits feitos).**
+  - [x] Commit 1 (`501ba59`): remove dead code — `sincronizar`, `buscarProduto` não-FV,
+    classe `Licenca` inteira, `InventarioItem.fromJson/copyWith`,
+    `InventarioRequest.fromJson`, `EtiquetaColetor.fromJson` + testes. (101→88 testes)
+  - [x] Commit 2 (`9415a1c`): retry cobre 5xx **só no GET** (`_post` inalterado, evita
+    gravação dupla).
+  - [x] Commit 3 (`94412f3`): lints estritos em `analysis_options.yaml` + 11 auto-fixes.
+    Adiados para lote próprio: `unawaited_futures` (7 sites, pedem `unawaited()` +
+    import `dart:async`) e `strict-inference` (ruído em `Future.delayed`).
+  - [ ] **Commit 4 (pendente): refactor de UI.** `IntrinsicHeight`→layout leve em
+    [coleta_screen.dart:402](lib/screens/coleta_screen.dart#L402) e
+    [etiqueta_screen.dart:527](lib/screens/etiqueta_screen.dart#L527) (ambos só esticam a
+    barrinha lateral de 4px). Extrair `_buildItemCard`/`_buildProdutoCard`/`_buildInfoRow`
+    ([coleta:397](lib/screens/coleta_screen.dart#L397),
+    [etiqueta:522](lib/screens/etiqueta_screen.dart#L522),
+    [consulta_preco:313](lib/screens/consulta_preco_screen.dart#L313)) para widgets `const`.
+    Decisão do usuário: fazer agora, sem validação visual (declarar "UI não validada").
+    Também revisar `intl 0.20.2`/`mobile_scanner 7.1.2` pinados → adiado (bump = lote próprio).
 
 ---
 
@@ -21,9 +38,6 @@ _(nada no momento)_
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P2] Lote 8 — Qualidade/consistência.** Remover dead code (`buscarProduto` não-FV,
-  `sincronizar`, factories não usados); `IntrinsicHeight`→layout leve; `_build...()`→widget;
-  lints estritos; versões de deps; retry cobrir 5xx (GET).
 - **[P2] Lote 9 — Testes.** Widget tests (Splash/Config/Coleta); teste do `ConfigProvider`;
   teste do retry/backoff; corrigir teste enganoso "API não configurada"; testar redação do
   `LoggerService` e `StorageService`.
