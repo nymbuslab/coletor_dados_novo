@@ -131,7 +131,8 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
       if (!mounted || etiquetasSalvas.isEmpty) return;
       setState(() {
         _produtosPesquisados.addAll(etiquetasSalvas);
-        _contadorItens = _produtosPesquisados
+        _contadorItens =
+            _produtosPesquisados
                 .map((e) => e.numeroItem)
                 .reduce((a, b) => a > b ? a : b) +
             1;
@@ -199,7 +200,8 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     try {
       if (configProvider.config.endereco.isNotEmpty &&
           configProvider.config.porta.isNotEmpty) {
-        final baseUrl = 'http://${configProvider.config.endereco}:${configProvider.config.porta}/api';
+        final baseUrl =
+            'http://${configProvider.config.endereco}:${configProvider.config.porta}/api';
         ApiService.instance.configure(baseUrl);
       }
       final produtoData = await ApiService.instance.buscarProdutoFV(codigo);
@@ -472,8 +474,10 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                         key: const ValueKey('list'),
                         padding: const EdgeInsets.all(16),
                         itemCount: _produtosPesquisados.length,
-                        itemBuilder: (context, index) =>
-                            _buildProdutoCard(_produtosPesquisados[index], index),
+                        itemBuilder: (context, index) => _buildProdutoCard(
+                          _produtosPesquisados[index],
+                          index,
+                        ),
                       ),
               ),
             ),
@@ -522,83 +526,79 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       clipBehavior: Clip.antiAlias,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(left: BorderSide(color: AppColors.etiqueta, width: 4)),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Barra lateral colorida
-            Container(width: 4, color: AppColors.etiqueta),
-            // Conteúdo
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Linha 1: badge + barcode + data + delete
-                    Row(
-                      children: [
-                        StatusBadge(
-                          label: produto.numeroItemFormatado,
-                          color: AppColors.etiqueta,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            produto.codBarras,
-                            style: tt.labelLarge,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Text(
-                          produto.dataHoraFormatada,
-                          style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
-                        ),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
-                          color: AppColors.danger,
-                          tooltip: 'Remover item',
-                          onPressed: () => _removerProduto(index),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Linha 2: nome do produto
-                    Text(
-                      produto.produto,
-                      style: tt.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 10),
-                    // Linha 3: preço + tipo de etiqueta
-                    Row(
-                      children: [
-                        StatusBadge(label: produto.precoFormatado, color: AppColors.success),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: StatusBadge(
-                            label: produto.tipoEtiqueta ?? _tipoEtiquetaGlobal?.nome ?? 'Sem tipo',
-                            color: AppColors.warning,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+            // Linha 1: badge + barcode + data + delete
+            Row(
+              children: [
+                StatusBadge(
+                  label: produto.numeroItemFormatado,
+                  color: AppColors.etiqueta,
                 ),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    produto.codBarras,
+                    style: tt.labelLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  produto.dataHoraFormatada,
+                  style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
+                ),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  color: AppColors.danger,
+                  tooltip: 'Remover item',
+                  onPressed: () => _removerProduto(index),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Linha 2: nome do produto
+            Text(
+              produto.produto,
+              style: tt.titleMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 10),
+            // Linha 3: preço + tipo de etiqueta
+            Row(
+              children: [
+                StatusBadge(
+                  label: produto.precoFormatado,
+                  color: AppColors.success,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: StatusBadge(
+                    label:
+                        produto.tipoEtiqueta ??
+                        _tipoEtiquetaGlobal?.nome ??
+                        'Sem tipo',
+                    color: AppColors.warning,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
-
 }

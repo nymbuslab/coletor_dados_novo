@@ -399,89 +399,82 @@ class _ColetaScreenState extends State<ColetaScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       clipBehavior: Clip.antiAlias,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(left: BorderSide(color: widget.corPrimaria, width: 4)),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(width: 4, color: widget.corPrimaria),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        StatusBadge(
-                          label: 'Item ${item.item.toString().padLeft(3, '0')}',
-                          color: widget.corPrimaria,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            item.barras,
-                            style: tt.labelLarge,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Text(
-                          item.dtCriacaoFormatada,
-                          style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
-                        ),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          color: AppColors.info,
-                          tooltip: 'Editar item',
-                          onPressed: () => _editarItem(index),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18),
-                          color: AppColors.danger,
-                          tooltip: 'Remover item',
-                          onPressed: () => _removerItem(index),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.produto,
-                      style: tt.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        StatusBadge(
-                          label: 'Atual: ${_formatarQuantidade(item.estoqueAtual)}',
-                          color: AppColors.warning,
-                        ),
-                        const SizedBox(width: 8),
-                        StatusBadge(
-                          label: 'Novo: ${_formatarQuantidade(item.novoEstoque)}',
-                          color: AppColors.success,
-                        ),
-                        const Spacer(),
-                        StatusBadge(label: item.unidade, color: AppColors.info),
-                      ],
-                    ),
-                  ],
+            Row(
+              children: [
+                StatusBadge(
+                  label: 'Item ${item.item.toString().padLeft(3, '0')}',
+                  color: widget.corPrimaria,
                 ),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    item.barras,
+                    style: tt.labelLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  item.dtCriacaoFormatada,
+                  style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
+                ),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  color: AppColors.info,
+                  tooltip: 'Editar item',
+                  onPressed: () => _editarItem(index),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
+                  visualDensity: VisualDensity.compact,
+                ),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  color: AppColors.danger,
+                  tooltip: 'Remover item',
+                  onPressed: () => _removerItem(index),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.produto,
+              style: tt.titleMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                StatusBadge(
+                  label: 'Atual: ${_formatarQuantidade(item.estoqueAtual)}',
+                  color: AppColors.warning,
+                ),
+                const SizedBox(width: 8),
+                StatusBadge(
+                  label: 'Novo: ${_formatarQuantidade(item.novoEstoque)}',
+                  color: AppColors.success,
+                ),
+                const Spacer(),
+                StatusBadge(label: item.unidade, color: AppColors.info),
+              ],
             ),
           ],
         ),
