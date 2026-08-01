@@ -20,10 +20,10 @@ Dart: 3.5.x
 Plataformas: Android, iOS
 ```
 
-**Gerenciamento de estado:** _(BLoC / Riverpod / Provider — preencha)_  
-**Banco local:** _(Drift / Hive / SQLite — preencha)_  
-**HTTP:** _(Dio / http — preencha)_  
-**Injeção de dependência:** _(get_it + injectable — preencha)_
+**Gerenciamento de estado:** Provider (ChangeNotifier) — ex.: ConfigProvider  
+**Persistência local:** SharedPreferences (dados) + flutter_secure_storage (licença)  
+**HTTP:** http (pacote oficial), com retry/backoff e cache em memória  
+**Injeção de dependência:** nenhuma — services como singleton/estáticos
 
 ---
 
@@ -91,27 +91,24 @@ claude --agent test
 
 ## Arquitetura
 
-Clean Architecture com Feature-first:
+Estrutura plana por tipo (não é Clean Architecture / feature-first):
 
 ```
 lib/
 ├── core/
-│   ├── di/                  # Injeção de dependências (get_it)
-│   ├── error/               # Failures e Exceptions
-│   ├── network/             # DioClient + interceptors
-│   └── usecases/            # Interface base UseCase
-│
-├── features/
-│   └── [feature]/
-│       ├── data/            # Models, DataSources, RepositoryImpl
-│       ├── domain/          # Entities, Repository (abstract), UseCases
-│       └── presentation/    # BLoC/Notifier, Pages, Widgets
-│
+│   ├── theme/       # AppColors, ThemeData
+│   └── widgets/     # compartilhados (EmptyState, StatusBadge)
+├── models/          # AppConfig, Produto, EtiquetaColetor, InventarioItem, Licenca
+├── providers/       # ConfigProvider (Provider/ChangeNotifier)
+├── services/        # ApiService, StorageService, LicenseService,
+│                    # ScannerService, FeedbackService, LoggerService
+├── screens/         # splash, login, home, consulta_preco, etiqueta,
+│                    # inventario, entrada, coleta, config
+├── utils/           # BarcodeUtils
 └── main.dart
 ```
 
-**Regra de dependência:** `presentation → domain ← data`  
-Domain nunca importa Flutter ou pacotes externos.
+**Fluxo:** `screens → providers/services → models`. Sem camadas domain/data separadas.
 
 ---
 
@@ -119,8 +116,8 @@ Domain nunca importa Flutter ou pacotes externos.
 
 - **Nomenclatura:** `snake_case` para arquivos, `PascalCase` para classes
 - **Widgets:** sempre `const` quando possível; extrair sub-widgets em vez de métodos
-- **Estados BLoC:** usar `sealed class` + `final class` (Dart 3+)
-- **Retornos de repository:** sempre `Either<Failure, T>` de dartz
+- **Estado:** Provider/ChangeNotifier; services estáticos ou singleton
+- **Retornos de service:** valor direto ou `null`; erros via `Exception` (sem dartz)
 - **Imports:** agrupar por (1) dart:, (2) flutter, (3) packages, (4) projeto
 - **Testes:** padrão Arrange/Act/Assert, um arquivo de test por arquivo de prod
 
@@ -128,30 +125,33 @@ Domain nunca importa Flutter ou pacotes externos.
 
 ## Endpoints conhecidos
 
-_(Preencha à medida que integrar APIs)_
-
 ```
-Base URL (dev):     http://localhost:3000/api
-Base URL (staging): https://staging.suaapi.com/api
-Base URL (prod):    https://api.suaapi.com/api
+Base URL: http://{endereco}:{porta}/api  (endereço/porta configurados no app)
 
-GET  /coletas          — lista coletas
-POST /coletas          — cria coleta
-GET  /coletas/:id      — detalhe
+GET  /fv/produtos        — lista completa p/ consulta de preço (filtro por cod_barras é no cliente)
+GET  /produtos           — lista geral de produtos
+GET  /produtos?barcode=  — ATENÇÃO: servidor IGNORA o filtro e devolve a lista inteira (ver Notas)
+GET  /etiquetas          — tipos de etiquetas
+GET  /licenca/:licenca   — valida licença (body "ok" = válida)
+POST /coletor            — envia inventário / entrada / etiquetas (campo "coleta")
+POST /dados              — envia dados coletados
 ```
 
 ---
 
 ## Banco de dados local
 
-_(Preencha com suas tabelas)_
-
 ```
-Schema version: 1
+Não há banco relacional local. Persistência via chave-valor:
 
-Tabelas:
-- coletas (id, titulo, data, sincronizado)
-- (adicione conforme criar)
+SharedPreferences:
+- app_config           (endereco, porta, isConfigured — sem a licença)
+- etiquetas_pendentes  (lista de Produto)
+- inventario_itens     (lista de InventarioItem)
+- entrada_itens        (lista de InventarioItem)
+
+flutter_secure_storage:
+- secure_license       (licença; fallback base64 em SharedPreferences fora de release)
 ```
 
 ---
