@@ -60,7 +60,6 @@ class ApiService {
     'Accept': 'application/json',
   };
 
-
   void _handleUnauthorized() {
     LoggerService.w(
       'Resposta 401/403 recebida. Disparando redirecionamento para Login.',
@@ -89,7 +88,6 @@ class ApiService {
     return Duration(milliseconds: ms);
   }
 
-
   Future<http.Response> _get(
     Uri url, {
     Duration? timeout,
@@ -113,7 +111,7 @@ class ApiService {
           LoggerService.w(
             'GET retornou ${response.statusCode} (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
           );
-          await Future.delayed(delay);
+          await Future<void>.delayed(delay);
           continue;
         }
         return response;
@@ -126,7 +124,7 @@ class ApiService {
         LoggerService.w(
           'Falha na requisição GET (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
         );
-        await Future.delayed(delay);
+        await Future<void>.delayed(delay);
       }
     }
   }
@@ -156,7 +154,7 @@ class ApiService {
         LoggerService.w(
           'Falha na requisição POST (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
         );
-        await Future.delayed(delay);
+        await Future<void>.delayed(delay);
       }
     }
   }
@@ -186,7 +184,9 @@ class ApiService {
       final licencaTeste = licenca ?? '0000';
       // Codifica só o segmento da licença (byte-idêntico p/ dígitos; blinda
       // contra caractere especial). Não altera a URL das licenças reais.
-      final url = Uri.parse('$_baseUrl/licenca/${Uri.encodeComponent(licencaTeste)}');
+      final url = Uri.parse(
+        '$_baseUrl/licenca/${Uri.encodeComponent(licencaTeste)}',
+      );
       LoggerService.d('Testando conectividade com: $url');
       final response = await _get(url, timeout: _timeoutShort);
       LoggerService.d(
@@ -214,7 +214,9 @@ class ApiService {
       throw Exception('API não configurada');
     }
     try {
-      final url = Uri.parse('$_baseUrl/licenca/${Uri.encodeComponent(licenca)}');
+      final url = Uri.parse(
+        '$_baseUrl/licenca/${Uri.encodeComponent(licenca)}',
+      );
       LoggerService.d('Validando licença com: $url');
       final response = await _get(url, timeout: _timeoutMedium);
       LoggerService.d('Validação - Status: ${response.statusCode}');
@@ -256,7 +258,10 @@ class ApiService {
   }
 
   /// Busca um produto pelo cod_barras dentro de uma lista JSON já decodificada
-  Map<String, dynamic>? _buscarNaLista(List<dynamic> data, String codigoBarras) {
+  Map<String, dynamic>? _buscarNaLista(
+    List<dynamic> data,
+    String codigoBarras,
+  ) {
     int itemsProcessados = 0;
     for (var item in data) {
       itemsProcessados++;
@@ -282,14 +287,18 @@ class ApiService {
 
   /// Busca um produto pelo barcode usando o endpoint individual (?barcode=)
   /// Retorna o produto com todos os campos, incluindo valor_compra.
-  Future<Map<String, dynamic>?> buscarProdutoPorBarcode(String codigoBarras) async {
+  Future<Map<String, dynamic>?> buscarProdutoPorBarcode(
+    String codigoBarras,
+  ) async {
     if (!isConfigured) throw Exception('API não configurada');
     try {
       final codigoSan = BarcodeUtils.sanitize(codigoBarras);
-      final url = Uri.parse('$_baseUrl/produtos').replace(
-        queryParameters: {'barcode': codigoSan},
+      final url = Uri.parse(
+        '$_baseUrl/produtos',
+      ).replace(queryParameters: {'barcode': codigoSan});
+      LoggerService.d(
+        'Buscando produto por barcode: ${LoggerService.redactUrl(url.toString())}',
       );
-      LoggerService.d('Buscando produto por barcode: ${LoggerService.redactUrl(url.toString())}');
       final response = await _get(url, timeout: _timeoutMedium);
       LoggerService.d('Busca por barcode - Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -320,7 +329,9 @@ class ApiService {
     }
     try {
       final url = Uri.parse('$_baseUrl/etiquetas');
-      LoggerService.d('Buscando tipos de etiquetas com: ${LoggerService.redactUrl(url.toString())}');
+      LoggerService.d(
+        'Buscando tipos de etiquetas com: ${LoggerService.redactUrl(url.toString())}',
+      );
       final response = await _get(url, timeout: _timeoutMedium);
       LoggerService.d('Busca etiquetas - Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -409,19 +420,27 @@ class ApiService {
     if (!isConfigured) throw Exception('API não configurada');
     try {
       const cacheKey = 'fv_produtos';
-      LoggerService.d('Código de barras procurado: "${LoggerService.maskBarcode(BarcodeUtils.sanitize(codigoBarras))}"');
+      LoggerService.d(
+        'Código de barras procurado: "${LoggerService.maskBarcode(BarcodeUtils.sanitize(codigoBarras))}"',
+      );
 
       if (_cacheValido(cacheKey)) {
-        LoggerService.d('Cache hit /fv/produtos (${_produtosCache[cacheKey]!.length} itens)');
+        LoggerService.d(
+          'Cache hit /fv/produtos (${_produtosCache[cacheKey]!.length} itens)',
+        );
         return _buscarNaLista(_produtosCache[cacheKey]!, codigoBarras);
       }
 
       final url = Uri.parse('$_baseUrl/fv/produtos');
-      LoggerService.d('Buscando produto FV com: ${LoggerService.redactUrl(url.toString())}');
+      LoggerService.d(
+        'Buscando produto FV com: ${LoggerService.redactUrl(url.toString())}',
+      );
       final response = await _get(url, timeout: _timeoutLong);
       LoggerService.d('Busca FV - Status: ${response.statusCode}');
       if (response.statusCode == 200) {
-        LoggerService.d('Tamanho da resposta: ${response.body.length} caracteres');
+        LoggerService.d(
+          'Tamanho da resposta: ${response.body.length} caracteres',
+        );
         try {
           final data = jsonDecode(response.body);
           if (data is List) {
@@ -433,7 +452,9 @@ class ApiService {
               LoggerService.i('Produto encontrado com sucesso!');
               return produto;
             }
-            LoggerService.i('Produto não encontrado na lista de ${data.length} itens');
+            LoggerService.i(
+              'Produto não encontrado na lista de ${data.length} itens',
+            );
             return null;
           } else if (data is Map<String, dynamic>) {
             return data;
@@ -461,8 +482,12 @@ class ApiService {
       LoggerService.d('Enviando inventário com ${itens.length} itens...');
       final inventarioRequest = InventarioRequest(itens: itens);
       final url = Uri.parse('$_baseUrl/coletor');
-      LoggerService.d('URL do inventário: ${LoggerService.redactUrl(url.toString())}');
-      final body = jsonEncode(inventarioRequest.toJson()); // Conteúdo sensível não será logado
+      LoggerService.d(
+        'URL do inventário: ${LoggerService.redactUrl(url.toString())}',
+      );
+      final body = jsonEncode(
+        inventarioRequest.toJson(),
+      ); // Conteúdo sensível não será logado
       // Evita logar corpo completo
       LoggerService.d('Tamanho do corpo da requisição: ${body.length}');
       final response = await _post(

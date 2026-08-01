@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/core/widgets/empty_state.dart';
@@ -77,18 +79,24 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
         });
         // Busca valor_compra via endpoint individual (?barcode=) se o FV não trouxe.
         if (produtoFVData['valor_compra'] == null) {
-          ApiService.instance.buscarProdutoPorBarcode(codigo).then((produtoData) {
-            // Descarta resposta atrasada se já houve outra consulta.
-            if (!mounted || seq != _consultaSeq) return;
-            if (produtoData != null && produtoData['valor_compra'] != null) {
-              setState(() {
-                _produtoEncontrado = Produto.fromJson({
-                  ...produtoFVData,
-                  'valor_compra': produtoData['valor_compra'],
-                }, 0);
-              });
-            }
-          }).catchError((_) {});
+          unawaited(
+            ApiService.instance
+                .buscarProdutoPorBarcode(codigo)
+                .then((produtoData) {
+                  // Descarta resposta atrasada se já houve outra consulta.
+                  if (!mounted || seq != _consultaSeq) return;
+                  if (produtoData != null &&
+                      produtoData['valor_compra'] != null) {
+                    setState(() {
+                      _produtoEncontrado = Produto.fromJson({
+                        ...produtoFVData,
+                        'valor_compra': produtoData['valor_compra'],
+                      }, 0);
+                    });
+                  }
+                })
+                .catchError((_) {}),
+          );
         }
       } else {
         _showMessage('Produto não encontrado');
@@ -214,7 +222,9 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                         children: [
                           Text(
                             'Informações do Produto',
-                            style: tt.titleLarge!.copyWith(color: AppColors.consulta),
+                            style: tt.titleLarge!.copyWith(
+                              color: AppColors.consulta,
+                            ),
                           ),
                           const SizedBox(height: 16),
 
@@ -279,7 +289,8 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                     icon: Icons.search,
                     color: AppColors.consulta,
                     title: 'Nenhum produto consultado',
-                    subtitle: 'Digite um código ou escaneie para consultar o preço',
+                    subtitle:
+                        'Digite um código ou escaneie para consultar o preço',
                   ),
                 ),
               ],
@@ -321,11 +332,17 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
             width: 140,
             child: Text(
               '$label:',
-              style: tt.bodyMedium!.copyWith(fontWeight: FontWeight.bold, color: Colors.black87),
+              style: tt.bodyMedium!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
           Expanded(
-            child: Text(value, style: tt.bodyMedium!.copyWith(color: Colors.black54)),
+            child: Text(
+              value,
+              style: tt.bodyMedium!.copyWith(color: Colors.black54),
+            ),
           ),
         ],
       ),

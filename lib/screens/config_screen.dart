@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
@@ -130,14 +132,16 @@ class _ConfigScreenState extends State<ConfigScreen> {
       FeedbackService.showSnack(
         context,
         'Configuração salva com sucesso!',
-        type: FeedbackService.classifyMessage('Configuração salva com sucesso!'),
+        type: FeedbackService.classifyMessage(
+          'Configuração salva com sucesso!',
+        ),
       );
 
       if (widget.fromScreen == 'home') {
         // Volta para a Home que já está na pilha em vez de empilhar outra.
         navigator.pop();
       } else {
-        navigator.pushReplacementNamed('/login');
+        unawaited(navigator.pushReplacementNamed('/login'));
       }
     }
   }
@@ -156,9 +160,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configuração'),
-      ),
+      appBar: AppBar(title: const Text('Configuração')),
       body: SafeArea(
         child: Consumer<ConfigProvider>(
           builder: (context, configProvider, child) {
@@ -190,7 +192,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
                           const SizedBox(height: 4),
                           Text(
                             'Informe o endereço e porta do servidor',
-                            style: tt.bodyMedium!.copyWith(color: Colors.grey[600]),
+                            style: tt.bodyMedium!.copyWith(
+                              color: Colors.grey[600],
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -211,7 +215,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: AppColors.seed.withValues(alpha: 0.10),
+                                    color: AppColors.seed.withValues(
+                                      alpha: 0.10,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
@@ -221,7 +227,10 @@ class _ConfigScreenState extends State<ConfigScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                Text('Licença do dispositivo', style: tt.titleSmall),
+                                Text(
+                                  'Licença do dispositivo',
+                                  style: tt.titleSmall,
+                                ),
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -270,7 +279,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: AppColors.info.withValues(alpha: 0.10),
+                                    color: AppColors.info.withValues(
+                                      alpha: 0.10,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
@@ -305,7 +316,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
                               controller: _portaController,
                               decoration: const InputDecoration(
                                 labelText: 'Porta',
-                                prefixIcon: Icon(Icons.settings_ethernet_outlined),
+                                prefixIcon: Icon(
+                                  Icons.settings_ethernet_outlined,
+                                ),
                                 hintText: 'Ex: 8787',
                               ),
                               keyboardType: TextInputType.number,
@@ -348,12 +361,15 @@ class _ConfigScreenState extends State<ConfigScreen> {
                               height: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Icon(Icons.sync),
-                      label: Text(_isSyncing ? 'Testando conexão...' : 'Testar Conexão'),
+                      label: Text(
+                        _isSyncing ? 'Testando conexão...' : 'Testar Conexão',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.seed,
                         foregroundColor: Colors.white,

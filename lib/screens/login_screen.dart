@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
@@ -21,10 +23,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final navigator = Navigator.of(context);
 
     // Simula um delay de carregamento
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
 
     if (mounted) {
-      navigator.pushReplacementNamed('/home');
+      unawaited(navigator.pushReplacementNamed('/home'));
     }
 
     if (mounted) {
@@ -64,7 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'Coletor de Dados',
-                          style: tt.headlineMedium!.copyWith(color: AppColors.seed),
+                          style: tt.headlineMedium!.copyWith(
+                            color: AppColors.seed,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(

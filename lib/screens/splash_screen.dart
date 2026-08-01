@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,15 +28,15 @@ class _SplashScreenState extends State<SplashScreen> {
     await configProvider.init();
 
     // Aguarda um pouco para mostrar a splash screen
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
     // Navega para a tela apropriada
     if (configProvider.isConfigured) {
-      navigator.pushReplacementNamed('/login');
+      unawaited(navigator.pushReplacementNamed('/login'));
     } else {
-      navigator.pushReplacementNamed('/config', arguments: 'splash');
+      unawaited(navigator.pushReplacementNamed('/config', arguments: 'splash'));
     }
   }
 

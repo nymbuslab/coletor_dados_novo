@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:nymbus_coletor/core/theme/app_theme.dart';
 import 'package:nymbus_coletor/core/widgets/empty_state.dart';
@@ -110,7 +112,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
       if (!mounted) return;
       if (codigo != null && codigo.isNotEmpty) {
         _codigoController.text = codigo;
-        _pesquisarProduto();
+        unawaited(_pesquisarProduto());
       }
     } catch (e) {
       if (mounted) {
@@ -151,7 +153,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
         if (!mounted) return;
         _codigoController.clear();
         final novoProduto = Produto.fromJson(produto, _contadorItens);
-        _abrirTelaQuantidade(novoProduto);
+        unawaited(_abrirTelaQuantidade(novoProduto));
       } else {
         if (mounted) {
           _showMessage('Produto não encontrado');
@@ -257,7 +259,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
       await widget.onLimparItens();
 
       if (!mounted) return;
-      navigator.pushNamedAndRemoveUntil('/home', (route) => false);
+      unawaited(navigator.pushNamedAndRemoveUntil('/home', (route) => false));
     } catch (e) {
       if (mounted) {
         _showMessage(FeedbackService.friendlyError(e));
