@@ -12,13 +12,9 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 3] Corridas e estado nas telas.** _(só telas/estado, zero API)_
-  - Renumeração de item por maior número existente, não `length` (`coleta_screen`) —
-    evita número duplicado após remover item do meio e reabrir.
-  - Corrida que apaga etiquetas salvas ao abrir vindo da Consulta de Preço
-    (`etiqueta_screen`: aguardar carregar antes de adicionar).
-  - Resposta assíncrona atrasada sobrescrevendo produto atual na Consulta de Preço.
-  - `mounted` antes de `setState` em `addPostFrameCallback` (`etiqueta_screen`).
+- **[Lote 4] Services (cache/licença/scanner).** _(a iniciar)_
+  Invalidar cache ao trocar servidor; não regenerar licença em falha transitória
+  de leitura; scanner `.first` → `firstOrNull`; URL de licença por `Uri` seguro.
 
 ---
 
@@ -27,9 +23,6 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P1] Lote 4 — Services (cache/licença/scanner).** Invalidar cache ao trocar servidor;
-  não regenerar licença em falha transitória de leitura; scanner `.first` → `firstOrNull`;
-  URL de licença por `Uri` seguro.
 - **[P1] Lote 5 — Mensagens amigáveis + encoding.** Função central que traduz erro
   (rede/timeout/401/500/JSON) em português; corrigir mojibake ("nÃ£o"/"licenÃ§a"/"inventÃ¡rio").
 - **[P1] Lote 6 — UX + navegação.** Navegação Home→Config duplicando a Home; back do sistema
@@ -67,6 +60,16 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 3] Corridas e estado nas telas.** — 2026-08-01
+  Numeração retomada pelo maior `item` existente (não pelo `length`) em `coleta_screen`
+  — remover item do meio e reabrir não gera mais número duplicado (Inventário/Entrada).
+  `etiqueta_screen`: lista salva agora carrega **antes** de adicionar o produto vindo da
+  Consulta de Preço (`_inicializarLista` sequencia o `await`), acabando com a corrida que
+  apagava as etiquetas salvas; `mounted` checado no `addPostFrameCallback`. Consulta de
+  Preço ganhou sequência (`_consultaSeq`): resposta atrasada de um código antigo (inclusive
+  o `valor_compra` assíncrono) não sobrescreve mais um código consultado depois. Tudo
+  telas/estado, zero contato com a API. Validado: `flutter analyze` limpo, 101 testes.
 
 - [x] **[Lote 2] Código de barras / parse defensivo.** — 2026-08-01
   `BarcodeUtils.normalizeForCompare` (UPC-A 12 díg. → EAN-13 com zero à esquerda, canônico)

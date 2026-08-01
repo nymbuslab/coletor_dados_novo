@@ -83,7 +83,11 @@ class _ColetaScreenState extends State<ColetaScreen> {
         if (!mounted) return;
         setState(() {
           _itens.addAll(itensSalvos);
-          _contadorItens = _itens.length + 1;
+          // Retoma a numeração a partir do maior número existente, não do
+          // tamanho da lista — assim remover um item do meio não gera número
+          // duplicado ao reabrir a tela.
+          _contadorItens =
+              _itens.map((e) => e.item).reduce((a, b) => a > b ? a : b) + 1;
         });
       }
     } catch (e) {

@@ -20,6 +20,12 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
   bool _isSearching = false;
   Produto? _produtoEncontrado;
 
+  // Sequência da consulta: cada consulta captura seu número e só aplica o
+  // resultado (inclusive o assíncrono atrasado do valor de compra) se ainda for
+  // a consulta mais recente — evita que a resposta de um código antigo
+  // sobrescreva o produto de um código consultado depois.
+  int _consultaSeq = 0;
+
   @override
   void dispose() {
     _codigoController.dispose();
@@ -56,12 +62,15 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
       return;
     }
 
+    final int seq = ++_consultaSeq;
+
     setState(() {
       _isSearching = true;
     });
     try {
       final produtoFVData = await ApiService.instance.buscarProdutoFV(codigo);
-      if (!mounted) return;
+      // Ignora se a tela sumiu ou se já houve uma consulta mais recente.
+      if (!mounted || seq != _consultaSeq) return;
       if (produtoFVData != null) {
         setState(() {
           _produtoEncontrado = Produto.fromJson(produtoFVData, 0);
@@ -69,7 +78,8 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
         // Busca valor_compra via endpoint individual (?barcode=) se o FV não trouxe.
         if (produtoFVData['valor_compra'] == null) {
           ApiService.instance.buscarProdutoPorBarcode(codigo).then((produtoData) {
-            if (!mounted) return;
+            // Descarta resposta atrasada se já houve outra consulta.
+            if (!mounted || seq != _consultaSeq) return;
             if (produtoData != null && produtoData['valor_compra'] != null) {
               setState(() {
                 _produtoEncontrado = Produto.fromJson({
@@ -84,11 +94,12 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
         _showMessage('Produto não encontrado');
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && seq == _consultaSeq) {
         _showMessage('Erro ao consultar produto: $e');
       }
     } finally {
-      if (mounted) {
+      // Só a consulta mais recente controla o indicador de carregamento.
+      if (mounted && seq == _consultaSeq) {
         setState(() {
           _isSearching = false;
         });

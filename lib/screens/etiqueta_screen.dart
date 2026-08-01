@@ -37,14 +37,24 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
   @override
   void initState() {
     super.initState();
+    // Tipos de etiqueta carregam em paralelo (não interferem na lista salva).
     _carregarTiposEtiquetas();
-    _carregarEtiquetasSalvas();
+    // A lista salva precisa terminar de carregar ANTES de adicionar o produto
+    // que veio da Consulta de Preço — senão o salvamento do produto novo
+    // sobrescreve as etiquetas ainda não carregadas (corrida que apagava a lista).
+    _inicializarLista();
+  }
+
+  Future<void> _inicializarLista() async {
+    await _carregarEtiquetasSalvas();
+    if (!mounted) return;
     _adicionarProdutoSeNecessario();
   }
 
   void _adicionarProdutoSeNecessario() {
     if (widget.produtoParaAdicionar != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         setState(() {
           final novoProduto = Produto.fromJson(
             widget.produtoParaAdicionar!.toJson(),
