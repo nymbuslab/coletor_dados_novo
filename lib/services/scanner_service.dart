@@ -294,6 +294,12 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
       return;
     }
 
+    if (capture.barcodes.isEmpty) {
+      LoggerService.d(
+        'BarcodeScannerScreen: Captura sem códigos, ignorando detecção.',
+      );
+      return;
+    }
     final String codeRaw = capture.barcodes.first.rawValue ?? '';
     final String code = StorageService.sanitizeBarcode(codeRaw);
     if (code.isEmpty) {

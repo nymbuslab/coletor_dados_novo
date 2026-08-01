@@ -12,9 +12,9 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 4] Services (cache/licença/scanner).** _(a iniciar)_
-  Invalidar cache ao trocar servidor; não regenerar licença em falha transitória
-  de leitura; scanner `.first` → `firstOrNull`; URL de licença por `Uri` seguro.
+- **[Lote 5] Mensagens amigáveis + encoding.** _(a iniciar)_
+  Função central que traduz erro (rede/timeout/401/500/JSON) em português;
+  corrigir mojibake ("nÃ£o"/"licenÃ§a"/"inventÃ¡rio") nos services/comentários.
 
 ---
 
@@ -23,8 +23,6 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P1] Lote 5 — Mensagens amigáveis + encoding.** Função central que traduz erro
-  (rede/timeout/401/500/JSON) em português; corrigir mojibake ("nÃ£o"/"licenÃ§a"/"inventÃ¡rio").
 - **[P1] Lote 6 — UX + navegação.** Navegação Home→Config duplicando a Home; back do sistema
   na Home; snackbar limpar anterior + não ser cortado pela navegação; áreas de toque + tooltip;
   cores fixas → tema.
@@ -60,6 +58,16 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 4] Services (cache/licença/scanner).** — 2026-08-01
+  `ApiService.configure` invalida o cache em memória quando a URL base muda de fato
+  (mesma URL não invalida — cache normal preservado) → não devolve mais produto do
+  servidor anterior após troca. `StorageService.loadOrCreateLicense` não gera licença
+  nova em falha **transitória** de leitura do secure storage (flag `readThrew` → retorna
+  vazio) — evita sobrescrever a licença real do dispositivo. Scanner protege
+  `capture.barcodes.first` de lista vazia. URL de licença via `Uri.encodeComponent`
+  (byte-idêntica p/ os valores reais; só blinda caractere especial). Contrato da API
+  intacto. Validado: `flutter analyze` limpo, 101 testes.
 
 - [x] **[Lote 3] Corridas e estado nas telas.** — 2026-08-01
   Numeração retomada pelo maior `item` existente (não pelo `length`) em `coleta_screen`

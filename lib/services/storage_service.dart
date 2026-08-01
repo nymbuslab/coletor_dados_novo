@@ -453,6 +453,9 @@ class StorageService {
   /// Carrega a licença persistente do secure storage; se não existir, cria uma nova e persiste.
   static Future<String> loadOrCreateLicense() async {
     String? lic;
+    // Marca se a leitura do secure storage LANÇOU (falha transitória) — nesse
+    // caso não sabemos se já existe licença e não podemos gerar uma nova por cima.
+    bool readThrew = false;
     // Tenta ler do secure storage
     try {
       lic = await _secure.read(key: _secureLicenseKey);
@@ -462,6 +465,7 @@ class StorageService {
         return lic.trim();
       }
     } catch (e) {
+      readThrew = true;
       _secureReadFailures++;
       LoggerService.w('SecureStorage.read {"key":"$_secureLicenseKey","status":"failure","error":"$e"}');
     }
@@ -485,6 +489,17 @@ class StorageService {
       } catch (e) {
         LoggerService.w('Falha ao ler fallback de licença: $e');
       }
+    }
+
+    // Se a leitura do secure storage falhou (erro transitório) e o fallback não
+    // recuperou nada, NÃO geramos uma licença nova — isso sobrescreveria a real
+    // e o dispositivo perderia a licença. Retorna vazio; num próximo boot com
+    // leitura bem-sucedida, a licença existente volta.
+    if (readThrew) {
+      LoggerService.w(
+        'Leitura da licença falhou de forma transitória; não será gerada uma nova para preservar a existente.',
+      );
+      return '';
     }
 
     // Não há licença válida: gera nova e persiste

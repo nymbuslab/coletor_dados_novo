@@ -158,6 +158,12 @@ class ApiService {
     // if (kReleaseMode && normalized.startsWith('http://')) {
     //   throw Exception('Em produção, a URL base deve usar HTTPS');
     // }
+    // Troca real de servidor invalida o cache em memória — evita devolver
+    // produto do servidor anterior dentro do TTL. Mesma URL não invalida
+    // (as telas chamam configure a cada busca), preservando o cache normal.
+    if (_baseUrl != null && _baseUrl != normalized) {
+      invalidarCache();
+    }
     _baseUrl = normalized;
   }
 
@@ -166,7 +172,9 @@ class ApiService {
     if (!isConfigured) return false;
     try {
       final licencaTeste = licenca ?? '0000';
-      final url = Uri.parse('$_baseUrl/licenca/$licencaTeste');
+      // Codifica só o segmento da licença (byte-idêntico p/ dígitos; blinda
+      // contra caractere especial). Não altera a URL das licenças reais.
+      final url = Uri.parse('$_baseUrl/licenca/${Uri.encodeComponent(licencaTeste)}');
       LoggerService.d('Testando conectividade com: $url');
       final response = await _get(url, timeout: _timeoutShort);
       LoggerService.d(
@@ -194,7 +202,7 @@ class ApiService {
       throw Exception('API nÃ£o configurada');
     }
     try {
-      final url = Uri.parse('$_baseUrl/licenca/$licenca');
+      final url = Uri.parse('$_baseUrl/licenca/${Uri.encodeComponent(licenca)}');
       LoggerService.d('Validando licenÃ§a com: $url');
       final response = await _get(url, timeout: _timeoutMedium);
       LoggerService.d('Validação - Status: ${response.statusCode}');
