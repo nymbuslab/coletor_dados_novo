@@ -35,7 +35,7 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
     if (_formKey.currentState!.validate()) {
       final novaQuantidade = double.tryParse(_quantidadeController.text) ?? 0.0;
 
-      // Cria o item de inventÃ¡rio
+      // Cria o item de inventário
       final inventarioItem = InventarioItem(
         item: widget.produto.numeroItem,
         codigo: int.tryParse(widget.produto.codProduto) ?? 0,

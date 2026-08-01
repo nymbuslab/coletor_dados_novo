@@ -88,7 +88,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
             },
             icon: const Icon(Icons.camera_rear, color: Colors.white),
           ),
-          // BotÃ£o cancelar
+          // Botão cancelar
           IconButton(
             onPressed: () {
               _isHandlingResult = true;

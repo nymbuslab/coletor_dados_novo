@@ -28,7 +28,7 @@ class Produto {
   });
 
   factory Produto.fromJson(Map<String, dynamic> json, int numeroItem) {
-    // FunÃ§Ã£o auxiliar para converter valores para double de forma segura
+    // Função auxiliar para converter valores para double de forma segura
     double parseDouble(dynamic value) {
       if (value == null) return 0.0;
       if (value is double) return value;
@@ -39,7 +39,7 @@ class Produto {
       return 0.0;
     }
 
-    // FunÃ§Ã£o auxiliar para converter valores para string de forma segura
+    // Função auxiliar para converter valores para string de forma segura
     String parseString(dynamic value) {
       if (value == null) return '';
       return value.toString();

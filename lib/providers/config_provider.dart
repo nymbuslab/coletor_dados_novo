@@ -100,7 +100,7 @@ class ConfigProvider extends ChangeNotifier {
     }
   }
 
-  /// Valida a licenÃ§a com o servidor
+  /// Valida a licença com o servidor
   Future<bool> validarLicenca() async {
     if (_config.licenca.isEmpty) {
       _setError('Licença não definida');
@@ -126,7 +126,7 @@ class ConfigProvider extends ChangeNotifier {
     }
   }
 
-  /// Sincroniza configuraÃ§Ã£o (testa conectividade e valida licenÃ§a)
+  /// Sincroniza configuração (testa conectividade e valida licença)
   Future<bool> sincronizar() async {
     _setLoading(true);
     try {
@@ -161,7 +161,7 @@ class ConfigProvider extends ChangeNotifier {
     }
   }
 
-  /// Limpa a configuraÃ§Ã£o
+  /// Limpa a configuração
   Future<void> clearConfig() async {
     await StorageService.clearConfig();
     _config = AppConfig.empty();

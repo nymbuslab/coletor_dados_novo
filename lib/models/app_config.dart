@@ -11,14 +11,14 @@
     this.isConfigured = false,
   });
 
-  // Construtor para criar uma configuraÃ§Ã£o vazia
+  // Construtor para criar uma configuração vazia
   AppConfig.empty()
     : endereco = '',
       porta = '',
       licenca = '',
       isConfigured = false;
 
-  // MÃ©todo para criar uma cÃ³pia com modificaÃ§Ãµes
+  // Método para criar uma cópia com modificações
   AppConfig copyWith({
     String? endereco,
     String? porta,
@@ -33,7 +33,7 @@
     );
   }
 
-  // ConversÃ£o para Map (para armazenamento)
+  // Conversão para Map (para armazenamento)
   Map<String, dynamic> toMap() {
     return {
       'endereco': endereco,
@@ -43,7 +43,7 @@
     };
   }
 
-  // CriaÃ§Ã£o a partir de Map (para recuperaÃ§Ã£o)
+  // Criação a partir de Map (para recuperação)
   factory AppConfig.fromMap(Map<String, dynamic> map) {
     return AppConfig(
       endereco: map['endereco'] ?? '',

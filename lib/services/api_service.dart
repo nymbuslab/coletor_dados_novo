@@ -68,7 +68,7 @@ class ApiService {
     try {
       _onUnauthorized?.call();
     } catch (e, st) {
-      LoggerService.e('Erro ao executar handler de nÃ£o autorizado', e, st);
+      LoggerService.e('Erro ao executar handler de não autorizado', e, st);
     }
   }
 
@@ -112,7 +112,7 @@ class ApiService {
         }
         final delay = _backoffDelay(attempt);
         LoggerService.w(
-          'Falha na requisiÃ§Ã£o GET (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
+          'Falha na requisição GET (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
         );
         await Future.delayed(delay);
       }
@@ -142,7 +142,7 @@ class ApiService {
         }
         final delay = _backoffDelay(attempt);
         LoggerService.w(
-          'Falha na requisiÃ§Ã£o POST (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
+          'Falha na requisição POST (tentativa $attempt). Retentando em ${delay.inMilliseconds}ms...',
         );
         await Future.delayed(delay);
       }
@@ -196,14 +196,14 @@ class ApiService {
     }
   }
 
-  /// Valida uma licenÃ§a atravÃ©s da API
+  /// Valida uma licença através da API
   Future<bool> validarLicenca(String licenca) async {
     if (!isConfigured) {
-      throw Exception('API nÃ£o configurada');
+      throw Exception('API não configurada');
     }
     try {
       final url = Uri.parse('$_baseUrl/licenca/${Uri.encodeComponent(licenca)}');
-      LoggerService.d('Validando licenÃ§a com: $url');
+      LoggerService.d('Validando licença com: $url');
       final response = await _get(url, timeout: _timeoutMedium);
       LoggerService.d('Validação - Status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -222,23 +222,23 @@ class ApiService {
         throw Exception('Erro do servidor: ${response.statusCode}');
       }
     } catch (e) {
-      LoggerService.e('Erro detalhado na validaÃ§Ã£o: $e');
+      LoggerService.e('Erro detalhado na validação: $e');
       LoggerService.d('Tipo do erro: ${e.runtimeType}');
       if (e.toString().contains('Failed to fetch')) {
         LoggerService.w(
           'ERRO DE CORS: Configure o servidor para aceitar requisições de: ${Uri.base.origin}',
         );
       }
-      throw Exception('Erro ao validar licenÃ§a: $e');
+      throw Exception('Erro ao validar licença: $e');
     }
   }
 
-  /// MÃ©todo simplificado para validaÃ§Ã£o de licenÃ§a
+  /// Método simplificado para validação de licença
   Future<bool> validarLicencaSimples(String licenca) async {
     try {
       return await validarLicenca(licenca);
     } catch (e) {
-      LoggerService.e('Erro na validaÃ§Ã£o: $e');
+      LoggerService.e('Erro na validação: $e');
       return false;
     }
   }
@@ -354,10 +354,10 @@ class ApiService {
     }
   }
 
-  /// Busca tipos de etiquetas disponÃ­veis
+  /// Busca tipos de etiquetas disponíveis
   Future<List<Map<String, dynamic>>> buscarTiposEtiquetas() async {
     if (!isConfigured) {
-      throw Exception('API nÃ£o configurada');
+      throw Exception('API não configurada');
     }
     try {
       final url = Uri.parse('$_baseUrl/etiquetas');
@@ -387,7 +387,7 @@ class ApiService {
   /// Envia dados coletados para a API
   Future<bool> enviarDados(Map<String, dynamic> dados) async {
     if (!isConfigured) {
-      throw Exception('API nÃ£o configurada');
+      throw Exception('API não configurada');
     }
     try {
       final url = Uri.parse('$_baseUrl/dados');
@@ -406,7 +406,7 @@ class ApiService {
   /// Envia etiquetas para o coletor (tabela ts_arq_etq)
   Future<bool> enviarEtiquetasColetor(List<EtiquetaColetor> etiquetas) async {
     if (!isConfigured) {
-      throw Exception('API nÃ£o configurada');
+      throw Exception('API não configurada');
     }
     try {
       final itens = etiquetas
@@ -496,16 +496,16 @@ class ApiService {
 
   Future<void> enviarInventario(List<InventarioItem> itens) async {
     if (_baseUrl?.isEmpty ?? true) {
-      throw Exception('URL base nÃ£o configurada');
+      throw Exception('URL base não configurada');
     }
     try {
-      LoggerService.d('Enviando inventÃ¡rio com ${itens.length} itens...');
+      LoggerService.d('Enviando inventário com ${itens.length} itens...');
       final inventarioRequest = InventarioRequest(itens: itens);
       final url = Uri.parse('$_baseUrl/coletor');
-      LoggerService.d('URL do inventÃ¡rio: ${LoggerService.redactUrl(url.toString())}');
-      final body = jsonEncode(inventarioRequest.toJson()); // ConteÃºdo sensÃ­vel nÃ£o serÃ¡ logado
+      LoggerService.d('URL do inventário: ${LoggerService.redactUrl(url.toString())}');
+      final body = jsonEncode(inventarioRequest.toJson()); // Conteúdo sensível não será logado
       // Evita logar corpo completo
-      LoggerService.d('Tamanho do corpo da requisiÃ§Ã£o: ${body.length}');
+      LoggerService.d('Tamanho do corpo da requisição: ${body.length}');
       final response = await _post(
         url,
         headers: _jsonHeaders,
@@ -514,20 +514,20 @@ class ApiService {
       );
       LoggerService.d('Status da resposta: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        LoggerService.i('InventÃ¡rio enviado com sucesso!');
+        LoggerService.i('Inventário enviado com sucesso!');
       } else {
         LoggerService.e('Erro HTTP: ${response.statusCode}');
         throw Exception('Erro HTTP ${response.statusCode}');
       }
     } catch (e) {
-      LoggerService.e('Erro ao enviar inventÃ¡rio: $e');
-      throw Exception('Erro ao enviar inventÃ¡rio: $e');
+      LoggerService.e('Erro ao enviar inventário: $e');
+      throw Exception('Erro ao enviar inventário: $e');
     }
   }
 
   Future<void> enviarEntrada(List<InventarioItem> itens) async {
     if (_baseUrl?.isEmpty ?? true) {
-      throw Exception('URL base nÃ£o configurada');
+      throw Exception('URL base não configurada');
     }
     try {
       LoggerService.d('Enviando entrada com ${itens.length} itens...');
@@ -536,7 +536,7 @@ class ApiService {
       LoggerService.d('URL da entrada: $url');
       final body = jsonEncode(entradaRequest.toJson());
       // Evita logar corpo completo
-      LoggerService.d('Tamanho do corpo da requisiÃ§Ã£o: ${body.length}');
+      LoggerService.d('Tamanho do corpo da requisição: ${body.length}');
       final response = await _post(
         url,
         headers: _jsonHeaders,

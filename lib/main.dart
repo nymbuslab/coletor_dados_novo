@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Registra handler global de nÃ£o autorizado (401/403) para redirecionar ao Login
+    // Registra handler global de não autorizado (401/403) para redirecionar ao Login
     ApiService.instance.setUnauthorizedHandler(() {
       final nav = _rootNavigatorKey.currentState;
       if (nav == null) return;

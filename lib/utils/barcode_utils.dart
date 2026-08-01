@@ -1,5 +1,5 @@
 ﻿class BarcodeUtils {
-  // Centralizador de sanitizaÃ§Ã£o de cÃ³digos de barras
+  // Centralizador de sanitização de códigos de barras
   static String sanitize(String input) {
     var s = input.trim();
     s = s.replaceAll(RegExp(r'[\s\r\n\t]+'), '');

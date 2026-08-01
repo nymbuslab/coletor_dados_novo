@@ -12,9 +12,9 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 5] Mensagens amigáveis + encoding.** _(a iniciar)_
-  Função central que traduz erro (rede/timeout/401/500/JSON) em português;
-  corrigir mojibake ("nÃ£o"/"licenÃ§a"/"inventÃ¡rio") nos services/comentários.
+- **[Lote 6] UX + navegação.** _(a iniciar)_
+  Navegação Home→Config duplicando a Home; back do sistema na Home; snackbar limpar
+  anterior + não ser cortado pela navegação; áreas de toque + tooltip; cores fixas → tema.
 
 ---
 
@@ -23,9 +23,6 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
-- **[P1] Lote 6 — UX + navegação.** Navegação Home→Config duplicando a Home; back do sistema
-  na Home; snackbar limpar anterior + não ser cortado pela navegação; áreas de toque + tooltip;
-  cores fixas → tema.
 - **[P2] Lote 7 — Robustez do app.** Captura global de erro (`runZonedGuarded`/`FlutterError.onError`);
   `network_security_config.xml` p/ cleartext (rede local); rota `default` do `onGenerateRoute`;
   mover `setUnauthorizedHandler` para fora do `build()`.
@@ -58,6 +55,15 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 5] Mensagens amigáveis + encoding.** — 2026-08-01 _(2 commits)_
+  Parte A (`3487702`): `FeedbackService.friendlyError` traduz erro técnico
+  (timeout/rede/401/403/5xx/JSON) em português; as 3 telas de busca passam a exibir a
+  mensagem amigável no lugar do texto cru da `Exception` — o detalhe técnico segue no log.
+  Parte B: corrigido o mojibake (`Ã£`→`ã`, `Ã§`→`ç`, etc.) em 8 arquivos de `lib/`
+  (comentários, logs e mensagens de `Exception`) — regra única em nível de byte
+  (`c3 83 c2 XX` → `c3 XX`); diff simétrico, nada trafega para a API. Validado:
+  `flutter analyze` limpo, 101 testes.
 
 - [x] **[Lote 4] Services (cache/licença/scanner).** — 2026-08-01
   `ApiService.configure` invalida o cache em memória quando a URL base muda de fato
