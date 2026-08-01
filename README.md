@@ -41,8 +41,8 @@ Aplicativo Flutter para coleta de dados em campo, voltado para operações de in
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/coletor_dados.git
-cd coletor_dados
+git clone https://github.com/nymbuslab/coletor_dados_novo.git
+cd coletor_dados_novo
 
 # Instale as dependências
 flutter pub get
@@ -72,13 +72,13 @@ Na primeira execução, o app solicita o endereço do servidor (IP e porta) e va
 O app se comunica com um backend REST. Endpoints esperados:
 
 ```
-GET  /produtos               — lista de produtos
-GET  /produtos?barcode=X     — busca por código
-GET  /fv/produtos            — visão financeira de produtos
-GET  /etiquetas/tipos        — tipos de etiquetas disponíveis
+GET  /fv/produtos            — lista completa p/ consulta de preço (filtro por cod_barras no cliente)
+GET  /produtos               — lista geral de produtos
+GET  /produtos?barcode=X     — atenção: o servidor ignora o filtro e devolve a lista inteira
+GET  /etiquetas              — tipos de etiquetas disponíveis
+GET  /licenca/:licenca       — validação de licença (body "ok" = válida)
 POST /coletor                — envio de inventário / entrada / etiquetas
-GET  /ping                   — teste de conectividade
-POST /licenca/validar        — validação de licença
+POST /dados                  — envio de dados coletados
 ```
 
 ---
@@ -87,12 +87,12 @@ POST /licenca/validar        — validação de licença
 
 ```
 lib/
-├── core/              # Utilitários, tema, constantes
+├── core/              # Tema (theme) e widgets compartilhados
 ├── models/            # Entidades e DTOs
 ├── providers/         # ConfigProvider (Provider)
-├── router/            # Configuração de rotas
-├── screens/           # Telas do app
-└── services/          # ApiService, StorageService, ScannerService, etc.
+├── screens/           # Telas do app (rotas definidas no main.dart)
+├── services/          # ApiService, StorageService, ScannerService, etc.
+└── utils/             # BarcodeUtils
 ```
 
 **Destaques de implementação:**
@@ -105,4 +105,4 @@ lib/
 
 ## Licença
 
-Distribuído sob a licença MIT. Consulte o arquivo `LICENSE` para mais detalhes.
+Licenciamento a definir — não há arquivo `LICENSE` no repositório.

@@ -17,7 +17,7 @@ _(Atualize esta descrição com o que o app realmente faz)_
 ```
 Flutter: 3.24.x
 Dart: 3.5.x
-Plataformas: Android, iOS
+Plataformas: Android
 ```
 
 **Gerenciamento de estado:** Provider (ChangeNotifier) — ex.: ConfigProvider  
