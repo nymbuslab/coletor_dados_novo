@@ -12,24 +12,7 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 8] Qualidade/consistência — em andamento (3 de 4 commits feitos).**
-  - [x] Commit 1 (`501ba59`): remove dead code — `sincronizar`, `buscarProduto` não-FV,
-    classe `Licenca` inteira, `InventarioItem.fromJson/copyWith`,
-    `InventarioRequest.fromJson`, `EtiquetaColetor.fromJson` + testes. (101→88 testes)
-  - [x] Commit 2 (`9415a1c`): retry cobre 5xx **só no GET** (`_post` inalterado, evita
-    gravação dupla).
-  - [x] Commit 3 (`94412f3`): lints estritos em `analysis_options.yaml` + 11 auto-fixes.
-    Adiados para lote próprio: `unawaited_futures` (7 sites, pedem `unawaited()` +
-    import `dart:async`) e `strict-inference` (ruído em `Future.delayed`).
-  - [ ] **Commit 4 (pendente): refactor de UI.** `IntrinsicHeight`→layout leve em
-    [coleta_screen.dart:402](lib/screens/coleta_screen.dart#L402) e
-    [etiqueta_screen.dart:527](lib/screens/etiqueta_screen.dart#L527) (ambos só esticam a
-    barrinha lateral de 4px). Extrair `_buildItemCard`/`_buildProdutoCard`/`_buildInfoRow`
-    ([coleta:397](lib/screens/coleta_screen.dart#L397),
-    [etiqueta:522](lib/screens/etiqueta_screen.dart#L522),
-    [consulta_preco:313](lib/screens/consulta_preco_screen.dart#L313)) para widgets `const`.
-    Decisão do usuário: fazer agora, sem validação visual (declarar "UI não validada").
-    Também revisar `intl 0.20.2`/`mobile_scanner 7.1.2` pinados → adiado (bump = lote próprio).
+_(nada no momento)_
 
 ---
 
@@ -38,6 +21,17 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter analyze`
 + testes ao fim de cada. Ordem: bugs de dados → polimento.
 
+- **[P2] Lote 8.1 — Lints adiados.** Ligar `unawaited_futures` (7 sites; envolver em
+  `unawaited()` + import `dart:async`, sem trocar por `await` para não mudar timing) e
+  `strict-inference` (tipar `Future<void>.delayed(...)` nos ~5 sites). Fica separado por
+  exigir julgamento de comportamento site a site.
+- **[P2] Lote 8.2 — Extrair sub-widgets.** Converter `_buildItemCard`
+  ([coleta:397](lib/screens/coleta_screen.dart#L397)), `_buildProdutoCard`
+  ([etiqueta:520](lib/screens/etiqueta_screen.dart#L520)) e `_buildInfoRow`
+  ([consulta_preco:313](lib/screens/consulta_preco_screen.dart#L313)) em widgets `const`
+  (convenção do projeto). Sensível a render — idealmente validar em device.
+- **[P2] Lote 8.3 — Deps.** Revisar `intl 0.20.2` e `mobile_scanner 7.1.2` (pinados) e
+  demais versões; decidir bumps com changelog. Isolado por ser risco/ruído próprio.
 - **[P2] Lote 9 — Testes.** Widget tests (Splash/Config/Coleta); teste do `ConfigProvider`;
   teste do retry/backoff; corrigir teste enganoso "API não configurada"; testar redação do
   `LoggerService` e `StorageService`.
@@ -64,6 +58,20 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 8] Qualidade/consistência.** — 2026-08-01 _(4 commits)_
+  **Commit 1 (`501ba59`) — dead code:** removidos `ConfigProvider.sincronizar`,
+  `ApiService.buscarProduto` não-FV, a classe `Licenca` inteira, e os desserializadores
+  usados só em testes (`InventarioItem.fromJson/copyWith`, `InventarioRequest.fromJson`,
+  `EtiquetaColetor.fromJson`) + os testes correspondentes (101→88 testes). Envio à API
+  intacto. **Commit 2 (`9415a1c`) — retry 5xx:** `_get` re-tenta respostas 5xx (GET é
+  idempotente) e devolve a última ao esgotar; `_post` **inalterado** de propósito (nunca
+  re-tenta 5xx, evita gravação dupla). **Commit 3 (`94412f3`) — lints:** conjunto estrito
+  sobre `flutter_lints` (avoid_void_async, prefer_single_quotes, unnecessary_lambdas, etc.)
+  + 11 auto-fixes seguros. **Commit 4 (`6c5fabb`) — UI:** `IntrinsicHeight`→`Container` com
+  `Border(left: 4px)` em `_buildItemCard`/`_buildProdutoCard` (some o passe de layout extra
+  por card; offset do conteúdo idêntico). **UI não validada visualmente** (sem device).
+  Validado em cada etapa: `flutter analyze` limpo, 88 testes.
 
 - [x] **[Lote 7] Robustez do app.** — 2026-08-01
   **Captura global de erro** (`main.dart`): `runApp` dentro de `runZonedGuarded` +
