@@ -232,40 +232,40 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Código do Produto',
                                     _produtoEncontrado!.codProduto,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Código de Barras',
                                     _produtoEncontrado!.codBarras,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Produto',
                                     _produtoEncontrado!.produto,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Unidade',
                                     _produtoEncontrado!.unidade,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Valor de Venda',
                                     _produtoEncontrado!.precoFormatado,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Valor Ult. Compra',
                                     _produtoEncontrado!.valorCompraFormatado,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Qtd. Estoque',
                                     _produtoEncontrado!.qtdEstoqueFormatada,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Data Atualização',
                                     _produtoEncontrado!
                                         .dataAtualizacaoFormatada,
                                   ),
-                                  _buildInfoRow(
+                                  _InfoRow(
                                     'Data/Hora Consulta',
                                     _produtoEncontrado!.dataHoraFormatada,
                                   ),
@@ -321,7 +321,17 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+}
+
+/// Linha rótulo:valor da ficha do produto (widget const extraído de método).
+class _InfoRow extends StatelessWidget {
+  const _InfoRow(this.label, this.value);
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
