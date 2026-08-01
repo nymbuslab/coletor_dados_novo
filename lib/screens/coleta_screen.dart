@@ -59,13 +59,6 @@ class _ColetaScreenState extends State<ColetaScreen> {
   final List<InventarioItem> _itens = [];
   int _contadorItens = 1;
 
-  String _formatarQuantidade(double quantidade) {
-    if (quantidade == quantidade.toInt()) {
-      return quantidade.toInt().toString();
-    }
-    return quantidade.toString();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -361,8 +354,12 @@ class _ColetaScreenState extends State<ColetaScreen> {
                         key: const ValueKey('list'),
                         padding: const EdgeInsets.all(16),
                         itemCount: _itens.length,
-                        itemBuilder: (context, index) =>
-                            _buildItemCard(_itens[index], index),
+                        itemBuilder: (context, index) => _ItemCard(
+                          item: _itens[index],
+                          corPrimaria: widget.corPrimaria,
+                          onEditar: () => _editarItem(index),
+                          onRemover: () => _removerItem(index),
+                        ),
                       ),
               ),
             ),
@@ -396,14 +393,38 @@ class _ColetaScreenState extends State<ColetaScreen> {
     );
   }
 
-  Widget _buildItemCard(InventarioItem item, int index) {
+}
+
+String _formatarQuantidade(double quantidade) {
+  if (quantidade == quantidade.toInt()) {
+    return quantidade.toInt().toString();
+  }
+  return quantidade.toString();
+}
+
+/// Card de um item coletado (widget extraído de método).
+class _ItemCard extends StatelessWidget {
+  const _ItemCard({
+    required this.item,
+    required this.corPrimaria,
+    required this.onEditar,
+    required this.onRemover,
+  });
+
+  final InventarioItem item;
+  final Color corPrimaria;
+  final VoidCallback onEditar;
+  final VoidCallback onRemover;
+
+  @override
+  Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       clipBehavior: Clip.antiAlias,
       child: Container(
         decoration: BoxDecoration(
-          border: Border(left: BorderSide(color: widget.corPrimaria, width: 4)),
+          border: Border(left: BorderSide(color: corPrimaria, width: 4)),
         ),
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -413,7 +434,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
               children: [
                 StatusBadge(
                   label: 'Item ${item.item.toString().padLeft(3, '0')}',
-                  color: widget.corPrimaria,
+                  color: corPrimaria,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -432,7 +453,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
                   icon: const Icon(Icons.edit_outlined, size: 18),
                   color: AppColors.info,
                   tooltip: 'Editar item',
-                  onPressed: () => _editarItem(index),
+                  onPressed: onEditar,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(
                     minWidth: 40,
@@ -445,7 +466,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
                   icon: const Icon(Icons.delete_outline, size: 18),
                   color: AppColors.danger,
                   tooltip: 'Remover item',
-                  onPressed: () => _removerItem(index),
+                  onPressed: onRemover,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(
                     minWidth: 40,
