@@ -12,10 +12,7 @@ Controle de andamento do projeto. Fluxo de 3 seções: **Em Andamento → Próxi
 
 ## 🔄 Em Andamento
 
-- **[Lote 7] Robustez do app.** _(a iniciar)_
-  Captura global de erro (`runZonedGuarded`/`FlutterError.onError`);
-  `network_security_config.xml` p/ cleartext (rede local); rota `default` do
-  `onGenerateRoute`; mover `setUnauthorizedHandler` para fora do `build()`.
+_(nada no momento)_
 
 ---
 
@@ -53,6 +50,20 @@ Remediação da auditoria geral (2026-07-31/08-01). Um commit por lote, `flutter
 ---
 
 ## ✅ Concluído
+
+- [x] **[Lote 7] Robustez do app.** — 2026-08-01
+  **Captura global de erro** (`main.dart`): `runApp` dentro de `runZonedGuarded` +
+  `WidgetsFlutterBinding.ensureInitialized()`; `FlutterError.onError` manda todo erro
+  não tratado para o `LoggerService.e` (que já mascara dados sensíveis) e ainda pinta a
+  tela vermelha em debug — antes um erro solto sumia sem registro. **`setUnauthorizedHandler`
+  movido para o `main()`** (fora do `build()` do `MyApp`): registrado uma vez só, não mais a
+  cada rebuild; comportamento do 401/403 (redirecionar ao Login) idêntico. **Cleartext HTTP**:
+  novo `android/app/src/main/res/xml/network_security_config.xml` (`base-config
+  cleartextTrafficPermitted="true"`, IP dinâmico → sem domínio fixo) referenciado no
+  `AndroidManifest` — blinda o HTTP da rede local contra o bloqueio padrão do Android 9+
+  (aditivo, não muda o caso que funciona). **Cast defensivo** na rota `/inventario-update`
+  (`as Produto?` + guarda → Splash) para não estourar sem argumento. Zero contato com a API.
+  Validado: `flutter analyze` limpo, 101 testes.
 
 - [x] **[Lote 6] UX + navegação.** — 2026-08-01
   **6A (navegação/snackbar):** Config volta para a Home existente com `pop()` (não empilha

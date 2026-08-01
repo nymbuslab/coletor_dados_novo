@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Permite HTTP em texto claro (cleartext) para o servidor da API na rede local.
+  O endereço/porta são configurados pelo usuário em tempo de execução (IP dinâmico),
+  então não há como restringir por domínio fixo aqui. No Android 9+ (API 28) o
+  cleartext é bloqueado por padrão; este config libera para manter o app funcionando.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

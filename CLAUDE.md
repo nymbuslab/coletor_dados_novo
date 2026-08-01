@@ -162,4 +162,10 @@ _(Use este espaço para registrar decisões importantes)_
 
 - [DATA] Decisão: ...motivo...
 - [DATA] Problema encontrado: ...solução...
+- [2026-08-01] Decisão: HTTP cleartext liberado via `network_security_config.xml`
+  (`base-config cleartextTrafficPermitted="true"`) porque o servidor é IP dinâmico da
+  rede local (sem domínio fixo). Sem isso, Android 9+ bloqueia o HTTP puro que o app usa.
+  Captura global de erro (`runZonedGuarded` + `FlutterError.onError` no `main.dart`) manda
+  erros não tratados para o `LoggerService`; `setUnauthorizedHandler` registrado no `main()`
+  (uma vez), fora do `build()`.
 - [2026-07-31] Gotcha API: `GET /api/produtos?barcode=<cod>` **ignora o filtro** e devolve a lista inteira (~11.6k itens, ~2,4 MB). Por isso `buscarProdutoPorBarcode` filtra pelo `cod_barras` no cliente (via `_buscarNaLista`) — **nunca usar `data.first`**, senão o "Valor Ult. Compra" vem do produto errado. Correção do servidor pendente (ver PROGRESSO.md).
