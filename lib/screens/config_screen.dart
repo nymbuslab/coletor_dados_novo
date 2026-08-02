@@ -193,7 +193,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                           Text(
                             'Informe o endereço e porta do servidor',
                             style: tt.bodyMedium!.copyWith(
-                              color: Colors.grey[600],
+                              color: AppColors.inkMuted,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -353,7 +353,10 @@ class _ConfigScreenState extends State<ConfigScreen> {
                     const SizedBox(height: 24),
 
                     // ── Botões ───────────────────────────────────────────────
-                    ElevatedButton.icon(
+                    // Testar Conexao: acao de apoio -> pilula-fantasma (borda
+                    // azul). Salvar: acao principal -> pilula azul cheia, acende
+                    // ao conectar. Um filled por vez (padrao Apple), azul unico.
+                    OutlinedButton.icon(
                       onPressed: _isSyncing ? null : _syncConfiguration,
                       icon: _isSyncing
                           ? const SizedBox(
@@ -362,18 +365,13 @@ class _ConfigScreenState extends State<ConfigScreen> {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                                  AppColors.action,
                                 ),
                               ),
                             )
                           : const Icon(Icons.sync),
                       label: Text(
                         _isSyncing ? 'Testando conexão...' : 'Testar Conexão',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.seed,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
 
@@ -382,13 +380,11 @@ class _ConfigScreenState extends State<ConfigScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: ElevatedButton(
+                          child: OutlinedButton(
                             onPressed: _voltar,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[200],
-                              foregroundColor: Colors.grey[800],
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.ink,
+                              side: const BorderSide(color: AppColors.border),
                             ),
                             child: const Text('Voltar'),
                           ),
@@ -400,9 +396,10 @@ class _ConfigScreenState extends State<ConfigScreen> {
                             icon: const Icon(Icons.check_circle_outline),
                             label: const Text('Salvar'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.success,
+                              backgroundColor: AppColors.action,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              disabledBackgroundColor: AppColors.border,
+                              disabledForegroundColor: AppColors.inkMuted,
                             ),
                           ),
                         ),
@@ -430,7 +427,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = connected ? AppColors.success : Colors.grey;
+    final color = connected ? AppColors.success : AppColors.inkMuted;
     final label = connected ? 'Conectado' : 'Desconectado';
     final icon = connected ? Icons.wifi : Icons.wifi_off;
 
@@ -438,7 +435,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withValues(alpha: 0.30)),
       ),
       child: Row(
@@ -475,7 +472,7 @@ class _ValidationBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.30)),
       ),
       child: Row(
@@ -488,7 +485,7 @@ class _ValidationBanner extends StatelessWidget {
               style: TextStyle(
                 color: color,
                 fontSize: 13,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
