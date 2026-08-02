@@ -77,9 +77,9 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
+                decoration: const BoxDecoration(
+                  color: AppColors.surfaceSubtle,
+                  border: Border(bottom: BorderSide(color: AppColors.border)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,21 +105,21 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.orange[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.orange[200]!),
+                        color: AppColors.canvas,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border),
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.inventory_2,
-                            color: Colors.orange[700],
+                            color: AppColors.inkMuted,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Estoque atual: ${widget.produto.qtdEstoqueFormatada}',
-                            style: tt.titleMedium!.copyWith(color: Colors.orange[700]),
+                            style: tt.titleMedium!.copyWith(color: AppColors.ink),
                           ),
                         ],
                       ),
@@ -143,7 +143,6 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
                         decoration: const InputDecoration(
                           labelText: 'Quantidade',
                           hintText: '0',
-                          border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.numbers),
                         ),
                         keyboardType: const TextInputType.numberWithOptions(
@@ -181,11 +180,6 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
                               onPressed: _cancelar,
                               icon: const Icon(Icons.cancel),
                               label: const Text('Cancelar'),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -195,11 +189,8 @@ class _InventarioUpdateScreenState extends State<InventarioUpdateScreen> {
                               icon: const Icon(Icons.check),
                               label: const Text('Confirmar'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
+                                backgroundColor: AppColors.action,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
                               ),
                             ),
                           ),
