@@ -157,8 +157,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                         child: Text(
                           'Digite o código ou use a câmera para escanear',
                           style: tt.bodyMedium!.copyWith(
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
+                            color: AppColors.inkMuted,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -173,7 +172,6 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                             onPressed: _abrirScanner,
                             tooltip: 'Escanear código de barras',
                           ),
-                          border: const OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
                         onSubmitted: (_) => _consultarProduto(),
@@ -189,6 +187,9 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
                                   ),
                                 )
                               : const Icon(Icons.search),
@@ -196,9 +197,8 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                             _isSearching ? 'Consultando...' : 'Consultar',
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.consulta,
+                            backgroundColor: AppColors.action,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
                         ),
                       ),
@@ -221,7 +221,7 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                           Text(
                             'Informações do Produto',
                             style: tt.titleLarge!.copyWith(
-                              color: AppColors.consulta,
+                              color: AppColors.ink,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -285,7 +285,6 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                 const Expanded(
                   child: EmptyState(
                     icon: Icons.search,
-                    color: AppColors.consulta,
                     title: 'Nenhum produto consultado',
                     subtitle:
                         'Digite um código ou escaneie para consultar o preço',
@@ -307,9 +306,8 @@ class _ConsultaPrecoScreenState extends State<ConsultaPrecoScreen> {
                     icon: const Icon(Icons.label),
                     label: const Text('Enviar para Etiqueta'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.warning,
+                      backgroundColor: AppColors.action,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),
@@ -341,15 +339,15 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               '$label:',
               style: tt.bodyMedium!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+                color: AppColors.ink,
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: tt.bodyMedium!.copyWith(color: Colors.black54),
+              style: tt.bodyMedium!.copyWith(color: AppColors.inkMuted),
             ),
           ),
         ],
