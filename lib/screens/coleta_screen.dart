@@ -290,8 +290,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
                     child: Text(
                       'Digite o código ou use a câmera para escanear',
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
+                        color: AppColors.inkMuted,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -301,7 +300,6 @@ class _ColetaScreenState extends State<ColetaScreen> {
                     decoration: InputDecoration(
                       labelText: 'Código do produto',
                       hintText: 'Digite o código de barras',
-                      border: const OutlineInputBorder(),
                       prefixIcon: IconButton(
                         icon: const Icon(Icons.camera_alt),
                         onPressed: _abrirScanner,
@@ -319,7 +317,12 @@ class _ColetaScreenState extends State<ColetaScreen> {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
                             )
                           : const Icon(Icons.search),
                       label: Text(
@@ -328,7 +331,6 @@ class _ColetaScreenState extends State<ColetaScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: widget.corPrimaria,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
@@ -344,7 +346,6 @@ class _ColetaScreenState extends State<ColetaScreen> {
                     ? EmptyState(
                         key: const ValueKey('empty'),
                         icon: widget.iconeVazio,
-                        color: widget.corPrimaria,
                         title: widget.textoListaVazia,
                         subtitle: widget.textoListaVaziaSubtitulo,
                       )
@@ -379,9 +380,8 @@ class _ColetaScreenState extends State<ColetaScreen> {
                       '${widget.labelBotaoEnvio} (${_itens.length} itens)',
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.success,
+                      backgroundColor: AppColors.action,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),
@@ -444,7 +444,7 @@ class _ItemCard extends StatelessWidget {
                 ),
                 Text(
                   item.dtCriacaoFormatada,
-                  style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
+                  style: tt.labelSmall!.copyWith(color: AppColors.inkMuted),
                 ),
                 const SizedBox(width: 4),
                 IconButton(
@@ -486,15 +486,15 @@ class _ItemCard extends StatelessWidget {
               children: [
                 StatusBadge(
                   label: 'Atual: ${_formatarQuantidade(item.estoqueAtual)}',
-                  color: AppColors.warning,
+                  color: AppColors.inkMuted,
                 ),
                 const SizedBox(width: 8),
                 StatusBadge(
                   label: 'Novo: ${_formatarQuantidade(item.novoEstoque)}',
-                  color: AppColors.success,
+                  color: AppColors.inkMuted,
                 ),
                 const Spacer(),
-                StatusBadge(label: item.unidade, color: AppColors.info),
+                StatusBadge(label: item.unidade, color: AppColors.inkMuted),
               ],
             ),
           ],
