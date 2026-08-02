@@ -9,10 +9,10 @@ if %ERRORLEVEL% NEQ 0 (
 
 set OUTPUT=build\app\outputs\flutter-apk
 set FROM=%OUTPUT%\app-release.apk
-set TO=%OUTPUT%\nymbus-coletor.apk
+set TO=%OUTPUT%\gr7-coletor.apk
 
 if exist "%TO%" del "%TO%"
-rename "%FROM%" "nymbus-coletor.apk"
+rename "%FROM%" "gr7-coletor.apk"
 
 echo.
 echo APK gerado: %TO%
