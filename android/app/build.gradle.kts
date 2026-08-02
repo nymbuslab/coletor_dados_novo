@@ -79,7 +79,7 @@ android {
         variant.outputs
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
-                output.outputFileName = "nymbus-coletor.apk"
+                output.outputFileName = "gr7-coletor.apk"
             }
     }
 }
