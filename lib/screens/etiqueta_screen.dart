@@ -374,10 +374,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                       isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Tipo de Etiqueta (Global)',
-                        border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.label),
-                        filled: true,
-                        fillColor: Colors.white,
                       ),
                       items: _tiposEtiquetas.map((tipo) {
                         return DropdownMenuItem<TipoEtiqueta>(
@@ -406,8 +403,7 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                       'Digite o código ou use a câmera para escanear',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
+                        color: AppColors.inkMuted,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -418,15 +414,12 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                     controller: _codigoController,
                     decoration: InputDecoration(
                       labelText: 'Código de Barras',
-                      border: const OutlineInputBorder(),
                       prefixIcon: IconButton(
                         icon: const Icon(Icons.camera_alt),
                         onPressed: _abrirScanner,
                         tooltip: 'Escanear código de barras',
                       ),
                       hintText: 'Digite ou escaneie o código',
-                      filled: true,
-                      fillColor: Colors.white,
                     ),
                     keyboardType: TextInputType.text,
                     onSubmitted: (_) => _pesquisarProduto(),
@@ -440,14 +433,18 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
                             )
                           : const Icon(Icons.add),
                       label: Text(_isSearching ? 'Buscando...' : 'Adicionar'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.etiqueta,
+                        backgroundColor: AppColors.action,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
                   ),
@@ -463,7 +460,6 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                     ? const EmptyState(
                         key: ValueKey('empty'),
                         icon: Icons.inventory_2_outlined,
-                        color: AppColors.etiqueta,
                         title: 'Nenhum produto adicionado',
                         subtitle:
                             'Digite um código de barras e clique em "Adicionar"',
@@ -498,7 +494,12 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
                           )
                         : const Icon(Icons.cloud_upload),
                     label: Text(
@@ -507,10 +508,8 @@ class _EtiquetaScreenState extends State<EtiquetaScreen> {
                           : 'Enviar ${_produtosPesquisados.length} Etiqueta(s) para Servidor',
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.etiqueta,
+                      backgroundColor: AppColors.action,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      minimumSize: const Size(double.infinity, 50),
                     ),
                   ),
                 ),
@@ -565,7 +564,7 @@ class _ProdutoCard extends StatelessWidget {
                 ),
                 Text(
                   produto.dataHoraFormatada,
-                  style: tt.labelSmall!.copyWith(color: Colors.grey[500]),
+                  style: tt.labelSmall!.copyWith(color: AppColors.inkMuted),
                 ),
                 const SizedBox(width: 4),
                 IconButton(
@@ -596,7 +595,7 @@ class _ProdutoCard extends StatelessWidget {
               children: [
                 StatusBadge(
                   label: produto.precoFormatado,
-                  color: AppColors.success,
+                  color: AppColors.inkMuted,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -605,7 +604,7 @@ class _ProdutoCard extends StatelessWidget {
                         produto.tipoEtiqueta ??
                         tipoEtiquetaFallback ??
                         'Sem tipo',
-                    color: AppColors.warning,
+                    color: AppColors.inkMuted,
                   ),
                 ),
               ],
