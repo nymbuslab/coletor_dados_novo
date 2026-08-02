@@ -5,6 +5,15 @@ Mais recente no topo. Não registra detalhes internos, hashes ou lista de arquiv
 
 ---
 
+## 2026-08-02
+
+- **Visual novo em todo o app:** todas as telas repaginadas numa identidade mais limpa e
+  consistente (um único azul de ação, botões e campos arredondados, cartões com traço fino).
+  Sem mudança de funcionamento — só aparência.
+- **Nome do app:** agora aparece como **GR7 Coletor** na tela do celular.
+
+---
+
 ## 2026-07-31
 
 - **Consulta de Preço:** corrigido o "Valor Ult. Compra", que aparecia errado

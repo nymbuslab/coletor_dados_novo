@@ -33,8 +33,9 @@ listadas abaixo.
 - Trocar/remover `imei: 7829`. **Não tocar** (faz parte do POST que funciona).
 
 ### Pendências de decisão do usuário
-- Tela **Entrada** está implementada e roteada (`/entrada`) mas **sem botão** na navegação —
-  é intencional (feature pausada) ou faltou o acesso na Home?
+- **Resolvido (2026-08-02):** Entrada não faz parte do menu (só Etiqueta, Consulta Preço e
+  Inventário) — confirmado pelo usuário. A rota `/entrada` segue como código morto navegável;
+  limpeza (remover rota + `entrada_screen.dart`) fica opcional, não solicitada.
 
 ### Pendência externa (backend)
 - **[P1] Filtro `?barcode=` no servidor da API.** `GET /api/produtos?barcode=<código>`
@@ -51,6 +52,22 @@ listadas abaixo.
 ---
 
 ## ✅ Concluído
+
+- [x] **App renomeado para "GR7 Coletor".** — 2026-08-02
+  `android:label` "Nymbus - Coletor" → "GR7 Coletor" (nome no launcher). APK release: o
+  Gradle gera o padrão `app-release.apk` e o `build_release.bat` renomeia para
+  `gr7-coletor.apk` (fonte única do nome — o override do Gradle foi revertido para evitar
+  o gotcha do Flutter com `app-release.apk`). Só config Android; nenhum efeito no código.
+
+- [x] **Redesign visual "Apple" — todas as telas (Fase 3).** — 2026-08-02
+  Design system (tema Fase 1 + componentes Fase 2) aplicado nas 8 telas reais do menu:
+  Splash, Login, Home, Config, Consulta Preço, Etiqueta, Inventário (`coleta_screen`) e
+  Atualizar Estoque (`inventario_update`). Matiz único de ação (azul `#0066CC`), pílulas em
+  botões/inputs, cards hairline radius-18, Inter com tracking negativo; badges/botões antes
+  verdes/laranjas unificados no azul de ação ou neutro `inkMuted`. Zero mudança de
+  lógica/navegação/API — só visual. Validado: `flutter analyze` limpo, 126 testes; UI
+  conferida no device pelo usuário (build Android OK). Spec em
+  `docs/superpowers/specs/2026-08-01-apple-ui-reskin-design.md`.
 
 - [x] **[Lote 9B] Widget tests.** — 2026-08-01 (`0038cd7`) — 117 → 126 testes
   Splash/Config/Coleta na VM de teste (sem device). **Splash:** decisão de navegação
