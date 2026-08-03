@@ -1,6 +1,7 @@
 @echo off
+cd /d "%~dp0"
 echo Buildando APK release...
-flutter build apk --release
+call flutter build apk --release
 
 if %ERRORLEVEL% NEQ 0 (
     echo Build falhou.
