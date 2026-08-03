@@ -80,7 +80,6 @@ abstract class AppTheme {
   // Botões
   // ---------------------------------------------------------------------------
   // Primário: pílula Action Blue, texto branco. Anel de foco actionFocus 2px.
-  // (O micro-scale 0.95 no pressed vem no AppPillButton, Fase 2.)
   static final ElevatedButtonThemeData _elevatedButtonTheme =
       ElevatedButtonThemeData(
     style: ButtonStyle(

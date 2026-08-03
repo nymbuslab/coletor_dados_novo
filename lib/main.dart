@@ -8,7 +8,6 @@ import 'package:nymbus_coletor/models/produto.dart';
 import 'package:nymbus_coletor/providers/config_provider.dart';
 import 'package:nymbus_coletor/screens/config_screen.dart';
 import 'package:nymbus_coletor/screens/consulta_preco_screen.dart';
-import 'package:nymbus_coletor/screens/entrada_screen.dart';
 import 'package:nymbus_coletor/screens/etiqueta_screen.dart';
 import 'package:nymbus_coletor/screens/home_screen.dart';
 import 'package:nymbus_coletor/screens/inventario_screen.dart';
@@ -95,8 +94,6 @@ class MyApp extends StatelessWidget {
               return MaterialPageRoute(
                 builder: (_) => const InventarioScreen(),
               );
-            case '/entrada':
-              return MaterialPageRoute(builder: (_) => const EntradaScreen());
             case '/scanner':
               return MaterialPageRoute<String>(
                 builder: (_) => const BarcodeScannerScreen(),

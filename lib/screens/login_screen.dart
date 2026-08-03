@@ -111,7 +111,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 24),
 
                         // Botão Acessar — pílula do tema; loading mantém o
-                        // ElevatedButton (AppPillButton não cobre esse estado).
+                        // ElevatedButton (o botão-pílula do tema não cobre o
+                        // estado de carregando).
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
