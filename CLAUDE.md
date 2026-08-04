@@ -103,7 +103,7 @@ lib/
 ├── services/        # ApiService, StorageService, LicenseService,
 │                    # ScannerService, FeedbackService, LoggerService
 ├── screens/         # splash, login, home, consulta_preco, etiqueta,
-│                    # inventario, entrada, coleta, config
+│                    # inventario, coleta, config
 ├── utils/           # BarcodeUtils
 └── main.dart
 ```
@@ -133,7 +133,7 @@ GET  /produtos           — lista geral de produtos
 GET  /produtos?barcode=  — ATENÇÃO: servidor IGNORA o filtro e devolve a lista inteira (ver Notas)
 GET  /etiquetas          — tipos de etiquetas
 GET  /licenca/:licenca   — valida licença (body "ok" = válida)
-POST /coletor            — envia inventário / entrada / etiquetas (campo "coleta")
+POST /coletor            — envia inventário / etiquetas (campo "coleta")
 POST /dados              — envia dados coletados
 ```
 
@@ -148,7 +148,6 @@ SharedPreferences:
 - app_config           (endereco, porta, isConfigured — sem a licença)
 - etiquetas_pendentes  (lista de Produto)
 - inventario_itens     (lista de InventarioItem)
-- entrada_itens        (lista de InventarioItem)
 
 flutter_secure_storage:
 - secure_license       (licença; fallback base64 em SharedPreferences fora de release)

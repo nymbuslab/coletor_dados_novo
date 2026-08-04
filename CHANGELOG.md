@@ -11,6 +11,7 @@ Mais recente no topo. Não registra detalhes internos, hashes ou lista de arquiv
   consistente (um único azul de ação, botões e campos arredondados, cartões com traço fino).
   Sem mudança de funcionamento — só aparência.
 - **Nome do app:** agora aparece como **GR7 Coletor** na tela do celular.
+- **Lista de produtos mais enxuta:** nas telas de Etiqueta e Inventário, cada item ocupa bem menos espaço — cabem mais itens na tela sem rolar tanto.
 
 ---
 

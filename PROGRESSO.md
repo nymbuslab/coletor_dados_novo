@@ -34,8 +34,8 @@ listadas abaixo.
 
 ### Pendências de decisão do usuário
 - **Resolvido (2026-08-02):** Entrada não faz parte do menu (só Etiqueta, Consulta Preço e
-  Inventário) — confirmado pelo usuário. A rota `/entrada` segue como código morto navegável;
-  limpeza (remover rota + `entrada_screen.dart`) fica opcional, não solicitada.
+  Inventário) — confirmado pelo usuário. Removida por completo do código (tela, rota `/entrada`
+  e código morto residual nos services).
 
 ### Pendência externa (backend)
 - **[P1] Filtro `?barcode=` no servidor da API.** `GET /api/produtos?barcode=<código>`
@@ -52,6 +52,22 @@ listadas abaixo.
 ---
 
 ## ✅ Concluído
+
+- [x] **Cards em layout compacto (lista densa) — Etiqueta e Inventário.** — 2026-08-02 (build OK, UI não validada em device)
+  Card de 3 blocos → linha densa de lista (2 linhas + divisória fina + traço lateral 3px);
+  altura ~pela metade, cabem ~6-7 itens por tela em vez de ~2-3. Mesmos dados e ações — só o
+  arranjo muda. Opção "B" aprovada em prévia pelo usuário. Validado: analyze limpo, 126 testes.
+
+- [x] **Faxina de repositório + código morto da Entrada.** — 2026-08-02
+  Removido `pixel-agents/` (projeto de VSCode alheio, ~244 MB, git próprio); `flutter clean`
+  (~2 GB); `DESIGN-apple.md` movido de `lib/assets/` para `docs/`. Código morto zerado em `lib/`:
+  widgets `AppCard`/`SectionHeader`/`AppPillButton` sem uso, e **toda a Entrada** (tela, rota
+  `/entrada`, `ApiService.enviarEntrada`, `StorageService.*EntradaItens`, chave `entrada_itens`)
+  e o grupo de teste correspondente (126 → 124 testes). Validado: analyze limpo, testes passando.
+
+- [x] **`build_release.bat` corrigido.** — 2026-08-02
+  Roda na raiz (`cd /d %~dp0`) e usa `call flutter build` para o rename do APK executar — antes o
+  script terminava no build e saía `app-release.apk`. Agora gera `gr7-coletor.apk` de qualquer pasta.
 
 - [x] **App renomeado para "GR7 Coletor".** — 2026-08-02
   `android:label` "Nymbus - Coletor" → "GR7 Coletor" (nome no launcher). APK release: o
