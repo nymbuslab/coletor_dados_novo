@@ -265,20 +265,6 @@ void main() {
     });
   });
 
-  group('ApiService.enviarEntrada', () {
-    test('não lança exceção para status 201', () async {
-      final client = MockClient((_) async => http.Response('', 201));
-      final svc = _makeService(client);
-      await expectLater(svc.enviarEntrada([]), completes);
-    });
-
-    test('lança exceção para status 400', () async {
-      final client = MockClient((_) async => http.Response('', 400));
-      final svc = _makeService(client);
-      expect(() => svc.enviarEntrada([]), throwsException);
-    });
-  });
-
   group('ApiService handler de não autorizado', () {
     test('chama handler ao receber 401', () async {
       bool chamado = false;

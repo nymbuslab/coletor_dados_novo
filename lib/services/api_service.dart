@@ -508,35 +508,4 @@ class ApiService {
       throw Exception('Erro ao enviar inventário: $e');
     }
   }
-
-  Future<void> enviarEntrada(List<InventarioItem> itens) async {
-    if (_baseUrl?.isEmpty ?? true) {
-      throw Exception('URL base não configurada');
-    }
-    try {
-      LoggerService.d('Enviando entrada com ${itens.length} itens...');
-      final entradaRequest = InventarioRequest(coleta: 'ENTRADA', itens: itens);
-      final url = Uri.parse('$_baseUrl/coletor');
-      LoggerService.d('URL da entrada: $url');
-      final body = jsonEncode(entradaRequest.toJson());
-      // Evita logar corpo completo
-      LoggerService.d('Tamanho do corpo da requisição: ${body.length}');
-      final response = await _post(
-        url,
-        headers: _jsonHeaders,
-        body: body,
-        timeout: _timeoutLong,
-      );
-      LoggerService.d('Status da resposta: ${response.statusCode}');
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        LoggerService.i('Entrada enviada com sucesso!');
-      } else {
-        LoggerService.e('Erro HTTP: ${response.statusCode}');
-        throw Exception('Erro HTTP ${response.statusCode}');
-      }
-    } catch (e) {
-      LoggerService.e('Erro ao enviar entrada: $e');
-      throw Exception('Erro ao enviar entrada: $e');
-    }
-  }
 }
