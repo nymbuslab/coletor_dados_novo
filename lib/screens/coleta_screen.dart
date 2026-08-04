@@ -351,7 +351,7 @@ class _ColetaScreenState extends State<ColetaScreen> {
                       )
                     : ListView.builder(
                         key: const ValueKey('list'),
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.zero,
                         itemCount: _itens.length,
                         itemBuilder: (context, index) => _ItemCard(
                           item: _itens[index],
@@ -417,88 +417,68 @@ class _ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(left: BorderSide(color: corPrimaria, width: 4)),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.canvas,
+        border: Border(
+          left: BorderSide(color: corPrimaria, width: 3),
+          bottom: const BorderSide(color: AppColors.divider),
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                StatusBadge(
-                  label: 'Item ${item.item.toString().padLeft(3, '0')}',
-                  color: corPrimaria,
+      ),
+      padding: const EdgeInsets.fromLTRB(14, 4, 4, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Linha 1: item + nome + editar + remover
+          Row(
+            children: [
+              StatusBadge(
+                label: 'Item ${item.item.toString().padLeft(3, '0')}',
+                color: corPrimaria,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  item.produto,
+                  style: tt.titleSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    item.barras,
-                    style: tt.labelLarge,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  item.dtCriacaoFormatada,
-                  style: tt.labelSmall!.copyWith(color: AppColors.inkMuted),
-                ),
-                const SizedBox(width: 4),
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 18),
-                  color: AppColors.info,
-                  tooltip: 'Editar item',
-                  onPressed: onEditar,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  ),
-                  visualDensity: VisualDensity.compact,
-                ),
-                const SizedBox(width: 4),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 18),
-                  color: AppColors.danger,
-                  tooltip: 'Remover item',
-                  onPressed: onRemover,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  ),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.produto,
-              style: tt.titleMedium,
-              maxLines: 2,
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                color: AppColors.info,
+                tooltip: 'Editar item',
+                onPressed: onEditar,
+                padding: EdgeInsets.zero,
+                visualDensity: VisualDensity.compact,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline, size: 18),
+                color: AppColors.danger,
+                tooltip: 'Remover item',
+                onPressed: onRemover,
+                padding: EdgeInsets.zero,
+                visualDensity: VisualDensity.compact,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+              ),
+            ],
+          ),
+          // Linha 2: atual -> novo · unidade · código · data
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Text(
+              'Atual: ${_formatarQuantidade(item.estoqueAtual)} → '
+              'Novo: ${_formatarQuantidade(item.novoEstoque)} · '
+              '${item.unidade} · cód ${item.barras} · ${item.dtCriacaoFormatada}',
+              style: tt.labelMedium!.copyWith(color: AppColors.inkMuted),
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                StatusBadge(
-                  label: 'Atual: ${_formatarQuantidade(item.estoqueAtual)}',
-                  color: AppColors.inkMuted,
-                ),
-                const SizedBox(width: 8),
-                StatusBadge(
-                  label: 'Novo: ${_formatarQuantidade(item.novoEstoque)}',
-                  color: AppColors.inkMuted,
-                ),
-                const Spacer(),
-                StatusBadge(label: item.unidade, color: AppColors.inkMuted),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
